@@ -16,5 +16,9 @@ public abstract class Equipment {
     public int getItemNumber() {
         return itemNumber;
     }
+    
+    public int getIdTest() {
+        return itemNumber;
+    }
 
 }
