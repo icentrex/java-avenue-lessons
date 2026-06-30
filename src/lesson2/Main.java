@@ -1,7 +1,5 @@
 package lesson2;
 
-import java.text.DecimalFormatSymbols;
-
 public class Main {
     public static void main(String[] args) {
         //Вы хотите разместить вклад в банке на сумму 1 миллион 200 тысяч рублей
