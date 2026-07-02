@@ -1,6 +1,13 @@
 package lesson6.wednesday;
 
 import java.util.Objects;
+/*
+1 Переменные
+2 Конструктор
+3 Новые методы
+4 Геттеры и сеттеры. Лучше группировать геттеры рядом, сеттеры рядом
+5 Переопределенные методы
+ */
 
 public class Cat {
     private double growth;
