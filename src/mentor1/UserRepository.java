@@ -25,7 +25,7 @@ public class UserRepository {
             }
         }
 
-        if (index > 0) {
+        if (index >= 0) {
             users.remove(index);
             System.out.printf("\nПользователь с id = %d удален", userId);
         } else {
