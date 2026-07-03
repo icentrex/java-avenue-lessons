@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserRepository {
-    private List<User> users = new ArrayList<>();
+    //нужно делать final?
+    private final List<User> users = new ArrayList<>();
 
     public void create(String name, int id) {
         User user = new User(name, id);
@@ -12,10 +13,11 @@ public class UserRepository {
             System.out.println("\nПользователь уже существует!");
         } else {
             users.add(user);
-            System.out.println("\nПользователь " + user + " создан");
+            System.out.println("Пользователь " + user + " создан");
         }
     }
 
+    //как верно реализовать?
     public void deleteById(int userId) {
         int index = -1;
         for (int i = 0; i < users.size(); i++) {
