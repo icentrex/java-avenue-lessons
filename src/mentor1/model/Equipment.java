@@ -1,4 +1,4 @@
-package mentor1;
+package mentor1.model;
 
 import java.util.Objects;
 
@@ -30,8 +30,8 @@ public abstract class Equipment {
 
     @Override
     public String toString() {
-        return "Equipment{type=\'" + this.getClass().getSimpleName() +
-                "\', name='" + name + '\'' +
+        return "Equipment{type=" + this.getClass().getSimpleName() +
+                ", name='" + name + '\'' +
                 ", id=" + id +
                 '}';
     }

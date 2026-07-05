@@ -1,4 +1,4 @@
-package mentor1;
+package mentor1.model;
 
 public class Computer extends Equipment {
     public Computer(String name, int id) {

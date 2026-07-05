@@ -1,4 +1,4 @@
-package mentor1;
+package mentor1.model;
 
 public class Mouse extends Equipment {
     public Mouse(String name, int id) {

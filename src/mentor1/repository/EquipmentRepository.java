@@ -1,10 +1,12 @@
-package mentor1;
+package mentor1.repository;
+
+import mentor1.model.Equipment;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class EquipmentRepository {
-    private List<Equipment> equipments = new ArrayList<>();
+    private final List<Equipment> equipments = new ArrayList<>();
 
     public void add(Equipment equipment) {
         if (equipments.contains(equipment)) {

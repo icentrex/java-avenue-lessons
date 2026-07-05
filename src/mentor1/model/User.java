@@ -1,14 +1,14 @@
-package mentor1;
+package mentor1.model;
 
 import java.util.Objects;
 
 public class User {
     private String name;
-    private int id;
+    private String phoneNumber;
 
-    public User(String name, int id) {
+    public User(String name, String phoneNumber) {
         this.name = name;
-        this.id = id;
+        this.phoneNumber = phoneNumber;
     }
 
     public User() {
@@ -18,8 +18,8 @@ public class User {
         return this.name;
     }
 
-    public int getId() {
-        return this.id;
+    public String getPhoneNumber() {
+        return this.phoneNumber;
     }
 
     @Override
