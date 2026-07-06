@@ -20,37 +20,35 @@ public class FigurePerimeterCalculator {
 
         if (userChoice == 1) {
             System.out.println("Введите сторону A");
-            int a = scanner.nextInt();
+            double a = scanner.nextDouble();
             System.out.println("Введите сторону B");
-            int b = scanner.nextInt();
+            double b = scanner.nextDouble();
             System.out.println("Введите сторону C");
-            int c = scanner.nextInt();
+            double c = scanner.nextDouble();
             System.out.println("Периметр треугольника: " + MathUtils.calculateTrianglePerimeter(a, b, c));
         } else if (userChoice == 2) {
-            System.out.println("Введите сторону A");
-            int a = scanner.nextInt();
-            System.out.println("Введите сторону B");
-            int b = scanner.nextInt();
-            System.out.println("Периметр квадрата: " + MathUtils.calculateSquarePerimeter(a, b));
+            System.out.println("Введите длинну стороны");
+            double a = scanner.nextDouble();
+            System.out.println("Периметр квадрата: " + MathUtils.calculateSquarePerimeter(a));
         } else if (userChoice == 3) {
             System.out.println("Введите радиус окружности r");
-            int r = scanner.nextInt();
+            double r = scanner.nextDouble();
             System.out.printf("Длинна окружности: %.5f", MathUtils.calculateCirclePerimeter(r));
         } else if (userChoice == 4) {
             System.out.println("Введите сторону A");
-            int a = scanner.nextInt();
+            double a = scanner.nextDouble();
             System.out.println("Введите сторону B");
-            int b = scanner.nextInt();
+            double b = scanner.nextDouble();
             System.out.println("Введите сторону C");
-            int c = scanner.nextInt();
+            double c = scanner.nextDouble();
             System.out.println("Введите сторону D");
-            int d = scanner.nextInt();
+            double d = scanner.nextDouble();
             System.out.println("Периметр трапеции: " + MathUtils.calculateTrapezoidPerimeter(a, b, c, d));
         } else if (userChoice == 5) {
             System.out.println("Введите длину большой оси D");
-            int D = scanner.nextInt();
+            double D = scanner.nextDouble();
             System.out.println("Введите длину малой оси d");
-            int d = scanner.nextInt();
+            double d = scanner.nextDouble();
             System.out.printf("Периметр овала: %.5f", MathUtils.calculateEllipsePerimeter(D, d));
         } else {
             System.out.println("Некорректная фигура");
