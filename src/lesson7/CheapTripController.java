@@ -5,6 +5,8 @@ import java.util.Scanner;
 public class CheapTripController {
     private final CheapTripDB db = new CheapTripDB();
 
+    Scanner scanner = new Scanner(System.in);
+
     public void start() {
         while (true) {
             System.out.println("Добрый день! Я ваш персональный гид");
@@ -16,7 +18,6 @@ public class CheapTripController {
             System.out.println("5 - вывести все туры");
             System.out.println("0 - выйти из гида");
 
-            Scanner scanner = new Scanner(System.in);
             int choice = scanner.nextInt();
             scanner.nextLine();
 
@@ -33,12 +34,12 @@ public class CheapTripController {
                 }
                 case 3 -> {
                     System.out.println("Введите бюджет на поездку (тыс. рублей)?");
-                    double price = scanner.nextDouble();
+                    int price = scanner.nextInt();
                     db.searchByPrice(price);
                 }
                 case 4 -> {
                     System.out.println("Введите бюджет на поездку (тыс. руб.)?");
-                    double price = scanner.nextDouble();
+                    int price = scanner.nextInt();
                     scanner.nextLine();
                     System.out.println("Введите предпочитаемое количество звезд?");
                     int stars = scanner.nextInt();
