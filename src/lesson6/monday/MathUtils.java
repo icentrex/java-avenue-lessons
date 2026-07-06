@@ -32,8 +32,8 @@ public class MathUtils {
         return perimeter;
     }
 
-    public static double calculateSquarePerimeter(double a, double b) {
-        return (a + b) * 2;
+    public static double calculateSquarePerimeter(double a) {
+        return a * 2;
     }
 
     public static double calculateCirclePerimeter(double r) {

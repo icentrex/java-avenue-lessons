@@ -16,13 +16,13 @@ public class Main {
         что все работает корректно в условном классе Main, в котором бы они создавались, сообщали свои данные, и прочее
         9 Также необходимо продемонстрировать сравнение животных, близнецы должны быть равны, а вот не близнецы - нет
          */
-        Cat cat1 = new Cat("Феликс", 30, 3);
+        Cat cat1 = new Cat("Феликс", 30, 3, "Белый", 4);
         cat1.setFavoriteFood("Мороженка и дыня:)");
         cat1.setWeight(3.5);
-        Hippopotamus hippopotamus = new Hippopotamus("Тотошка", 150, 400);
+        Hippopotamus hippopotamus = new Hippopotamus("Тотошка", 150, 400, "Серый", 4);
         hippopotamus.setFavoriteFood("Свежая арбузная корочка:)");
         hippopotamus.setGrowth(200);
-        Cat cat2 = new Cat("Феликс", 30, 3);
+        Cat cat2 = new Cat("Феликс", 30, 3,"Белый", 4);
         cat2.setWeight(3.5);
         cat2.setFavoriteFood("Мороженка и дыня:)");
 

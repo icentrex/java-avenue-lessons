@@ -17,12 +17,12 @@ public class Cat {
     private final int numberOfPaws;
     private String favoriteFood;
 
-    public Cat(String name, double growth, double weight) {
+    public Cat(String name, double growth, double weight, String color, int numberOfPaws) {
         this.name = name;
         this.growth = growth;
         this.weight = weight;
-        this.color = "белый";
-        this.numberOfPaws = 4;
+        this.color = color;
+        this.numberOfPaws = numberOfPaws;
     }
 
     public void showWhoIAm() {

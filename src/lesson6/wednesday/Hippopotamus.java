@@ -10,12 +10,12 @@ public class Hippopotamus {
     private final int numberOfPaws;
     private String favoriteFood;
 
-    public Hippopotamus(String name, double growth, double weight) {
+    public Hippopotamus(String name, double growth, double weight, String color, int numberOfPaws) {
         this.name = name;
         this.growth = growth;
         this.weight = weight;
-        this.color = "темно-серый";
-        this.numberOfPaws = 4;
+        this.color = color;
+        this.numberOfPaws = numberOfPaws;
     }
 
     public void showWhoIAm() {
