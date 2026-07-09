@@ -1,12 +1,22 @@
 package mentor1.repository;
 
+import mentor1.model.Computer;
 import mentor1.model.Equipment;
+import mentor1.model.Monitor;
+import mentor1.model.Mouse;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class EquipmentRepository {
     private final List<Equipment> equipments = new ArrayList<>();
+
+    public EquipmentRepository() {
+        // Заполняем БД
+        this.equipments.add(new Monitor("Samsung", 1));
+        this.equipments.add(new Mouse("Logitech", 2));
+        this.equipments.add(new Computer("Dell", 3));
+    }
 
     public void add(Equipment equipment) {
         if (equipments.contains(equipment)) {

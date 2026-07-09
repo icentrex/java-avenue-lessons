@@ -32,4 +32,9 @@ public class UserService implements Cursoring {
     public String getCommands() {
         return "";
     }
+
+    @Override
+    public String execute(String commandNumber) {
+        return null;
+    }
 }
