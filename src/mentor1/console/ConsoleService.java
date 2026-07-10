@@ -52,6 +52,9 @@ public class ConsoleService implements Cursoring {
 
     @Override
     public String execute(String commandNumber) {
+        if (cursorObject != null) {
+            return this.cursorObject.execute(commandNumber);
+        }
         switch (commandNumber) {
             case "1" -> {
                 this.cursorObject = this.userService;
@@ -61,9 +64,6 @@ public class ConsoleService implements Cursoring {
                 //this.cursorObject = this.equipmentRepository; // Нужно заменить на EquipmentService
                 break;
             }
-        }
-        if (cursorObject != null) {
-            return this.cursorObject.execute(commandNumber);
         }
         return "";
     }
