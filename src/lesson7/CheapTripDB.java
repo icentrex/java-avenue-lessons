@@ -38,7 +38,7 @@ public class CheapTripDB {
 
     public void searchByPriceAndStars(int price, int stars) {
         for (Tour tour : tours) {
-            if (tour.getPrice() <= price && tour.getStars() == stars) {
+            if (tour.getPrice() <= price && tour.getStars() >= stars) {
                 System.out.println(tour);
             }
         }
