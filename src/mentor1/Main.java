@@ -1,7 +1,11 @@
 package mentor1;
+
+import mentor1.menu.EquipmentMenu;
+import mentor1.menu.UserMenu;
 import mentor1.repository.EquipmentRepository;
 import mentor1.repository.UserRepository;
-import mentor1.console.ConsoleService;
+import mentor1.menu.ConsoleMainMenu;
+import mentor1.service.EquipmentService;
 import mentor1.service.UserService;
 
 public class Main {
@@ -9,9 +13,12 @@ public class Main {
         UserRepository userRepository = new UserRepository();
         UserService userService = new UserService(userRepository);
         EquipmentRepository equipmentRepository = new EquipmentRepository();
+        EquipmentService equipmentService = new EquipmentService();
 
         // Консольный сервис запускается в конце инициализации
-        ConsoleService consoleService = new ConsoleService(userService, equipmentRepository);
-        consoleService.run();
+        UserMenu userMenu = new UserMenu(userService);
+        EquipmentMenu equipmentMenu = new EquipmentMenu(equipmentService);
+        ConsoleMainMenu consoleMainMenu = new ConsoleMainMenu(userMenu, equipmentMenu);
+        consoleMainMenu.run();
     }
 }

@@ -1,40 +1,45 @@
 package mentor1.service;
 
-import mentor1.Cursoring;
 import mentor1.model.User;
 import mentor1.repository.UserRepository;
 
-public class UserService implements Cursoring {
+public class UserService {
     private final UserRepository userRepository;
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    //норм название?
-    //Зачем нам возвращаемый тип Юзер? Подумать
-    public void create(String name, String phoneNumber) {
-        //зачем нам именно здесь создавать пользователя а не в юзеррепозитори?
-        //Это бизнес-логика: здесь могут быть проверки на заполнение полей юзера. То есть здесь уже готовый объект
-        //А в репозитории "тупая" хранилка уже готового объекта, она не должна знать ничего про его логику
-        if (userRepository.existsByPhone(phoneNumber)) {
+    public void create(String name, String phone) {
+        if (userRepository.existsByPhone(phone)) {
             System.out.println("Пользователь с таким телефоном уже существует!");
         }
-        userRepository.save(new User(name, phoneNumber));
+        userRepository.save(new User(name, phone));
     }
 
-    @Override
-    public String getInfo() {
-        return "";
+    public void deleteByPhone(String phone) {
+        if (!userRepository.existsByPhone(phone)) {
+            System.out.println("Пользователь с таким телефоном не найден!");
+        }
     }
 
-    @Override
-    public String getCommands() {
-        return "";
+    public User infoByPhone(String phone) {
+        if (!userRepository.existsByPhone(phone)) {
+            System.out.println("Пользователь с таким телефоном не найден!");
+            return null;
+        }
+        return userRepository.findByPhone(phone);
     }
 
-    @Override
-    public String execute(String commandNumber) {
-        return null;
+    public void assignEquipment() {
+
+    }
+
+    public void detachEquipment() {
+
+    }
+
+    public void showAll() {
+        userRepository.showAllUsers();
     }
 }
