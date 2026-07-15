@@ -11,7 +11,7 @@ public class UserRepository {
     private final Map<String, Integer> phoneToUserId = new HashMap<>(10);
     private int nextId = 1;
 
-    public void save(User user) throws RuntimeException {
+    public void save(User user) {
         // Метод на проверку наличия дубликата
         // Если нет дубля сохранить в Map
         // если дубль есть выбросить исключение
@@ -21,8 +21,13 @@ public class UserRepository {
         nextId++;
     }
 
-    public boolean existsByPhone(String phoneNumber) throws RuntimeException {
+    public boolean existsByPhone(String phoneNumber) {
         return phoneToUserId.containsKey(phoneNumber);
+    }
+
+    public User findByPhone(String phone) {
+        int id = phoneToUserId.get(phone);
+        return users.get(id);
     }
 
     //как верно реализовать?
@@ -55,10 +60,9 @@ public class UserRepository {
 //        System.out.println("\nПользователь не найден");
 //    }
 //
-//    public void showAllUsers() {
-//        System.out.println("\nСписок всех пользователей:");
-//        for (User user : users) {
-//            System.out.println(user);
-//        }
-//    }
+    public void showAllUsers() {
+        for (User user : users.values()) {
+            System.out.println(user);
+        }
+    }
 }
