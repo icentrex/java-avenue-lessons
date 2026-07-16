@@ -3,9 +3,6 @@ package mentor1.menu;
 import mentor1.Cursoring;
 
 public class ConsoleMainMenu implements Cursoring {
-    //Вывод доступных команд
-    //Считывание выбора пользователя
-    //Вывод информации
     private final UserMenu userMenu; // переделать Сервисы под Синглтоны?
     private final EquipmentMenu equipmentMenu;
     private Cursoring cursorObject;
@@ -49,12 +46,19 @@ public class ConsoleMainMenu implements Cursoring {
         if (cursorObject != null) {
             String result = this.cursorObject.execute(commandNumber);
 
-            if (result.equalsIgnoreCase("BACK")) {
+            if (result.isEmpty()) {
+                return "";
+            }
+
+            if (result.equals("BACK")) {
                 this.cursorObject = null;
                 return "";
-            } else if (result.equalsIgnoreCase("EXIT")) {
+            } else if (result.equals("EXIT")) {
                 this.isNeedContinue = false;
                 return "Программа завершена!";
+            } else if (result.startsWith("USER")) {
+                this.cursorObject = this.userMenu.findUserById(Integer.parseInt(result.substring(4)));
+                return "";
             }
             return result;
         }

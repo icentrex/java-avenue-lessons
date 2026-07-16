@@ -11,24 +11,19 @@ public class UserService {
     }
 
     public void create(String name, String phone) {
-        if (userRepository.existsByPhone(phone)) {
-            System.out.println("Пользователь с таким телефоном уже существует!");
-        }
         userRepository.save(new User(name, phone));
     }
 
-    public void deleteByPhone(String phone) {
-        if (!userRepository.existsByPhone(phone)) {
+    public void deleteById(int id) {
+        if (!userRepository.existsById(id)) {
             System.out.println("Пользователь с таким телефоном не найден!");
+            return;
         }
+        userRepository.deleteById(id);
     }
 
-    public User infoByPhone(String phone) {
-        if (!userRepository.existsByPhone(phone)) {
-            System.out.println("Пользователь с таким телефоном не найден!");
-            return null;
-        }
-        return userRepository.findByPhone(phone);
+    public User findById(int id) {
+        return userRepository.findById(id);
     }
 
     public void assignEquipment() {

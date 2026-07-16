@@ -2,67 +2,41 @@ package mentor1.repository;
 
 import mentor1.model.User;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserRepository {
-    private final Map<Integer, User> users = new HashMap<>(10);
-    //норм название мапы?
-    private final Map<String, Integer> phoneToUserId = new HashMap<>(10);
-    private int nextId = 1;
+    private final List<User> users = new ArrayList<>(100);
+
+    public UserRepository() {
+        users.add(new User("Сергей", "123-45-66"));
+        users.add(new User("Иван", "999-45-66"));
+        users.add(new User("Ирина", "888-45-66"));
+    }
 
     public void save(User user) {
-        // Метод на проверку наличия дубликата
-        // Если нет дубля сохранить в Map
-        // если дубль есть выбросить исключение
-        //проверка уже есть в сервисе, не дублирую
-        users.put(nextId, user);
-        phoneToUserId.put(user.getPhoneNumber(), nextId);
-        nextId++;
+        users.add(user);
     }
 
-    public boolean existsByPhone(String phoneNumber) {
-        return phoneToUserId.containsKey(phoneNumber);
+    public boolean existsById(int id) {
+        if (users.get(id) != null) {
+            return true;
+        }
+        return false;
     }
 
-    public User findByPhone(String phone) {
-        int id = phoneToUserId.get(phone);
+    public void showAllUsers() {
+        for (int i = 0; i < users.size(); i++) {
+            System.out.printf("id = %d, name = %s, phone = %s", i, users.get(i).getName(), users.get(i).getPhoneNumber());
+            System.out.println();
+        }
+    }
+
+    public User findById(int id) {
         return users.get(id);
     }
 
-    //как верно реализовать?
-//    public void deleteById(int userId) {
-//        int index = -1;
-//        for (int i = 0; i < users.size(); i++) {
-//            if (users.get(i).getId() == userId) {
-//                index = i;
-//                break;
-//            }
-//        }
-
-    // вынести в отдельный класс
-//        if (index >= 0) {
-//            users.remove(index);
-//            System.out.printf("\nПользователь с id = %d удален", userId);
-//        } else {
-//            System.out.printf("\nПользователь c id = %d не найден", userId);
-//        }
-    //   }
-//
-//    public void infoById(int userId) {
-//        for (User user : users) {
-//            if (user.getId() == userId) {
-//                System.out.println("\nИнформация о пользователе:");
-//                System.out.println(user);
-//                return;
-//            }
-//        }
-//        System.out.println("\nПользователь не найден");
-//    }
-//
-    public void showAllUsers() {
-        for (User user : users.values()) {
-            System.out.println(user);
-        }
+    public void deleteById(int id) {
+        users.remove(id);
     }
 }

@@ -1,6 +1,7 @@
 package mentor1.menu;
 
 import mentor1.Cursoring;
+import mentor1.model.User;
 import mentor1.service.UserService;
 
 public class UserMenu implements Cursoring {
@@ -8,6 +9,10 @@ public class UserMenu implements Cursoring {
 
     public UserMenu(UserService userService) {
         this.userService = userService;
+    }
+
+    public User findUserById(int id) {
+        return userService.findById(id);
     }
 
     @Override
@@ -21,10 +26,7 @@ public class UserMenu implements Cursoring {
                 Доступные команды:
                 1 - Создать пользователя
                 2 - Удалить пользователя
-                3 - Информация о пользователе
-                4 - Закрепить технику
-                5 - Открепить технику
-                6 - Список всех пользователей
+                3 - Выбрать пользователя
                 9 - Назад в главное меню
                 0 - Выход из программы
                 """;
@@ -41,19 +43,18 @@ public class UserMenu implements Cursoring {
                 userService.create(name, phone);
             }
             case "2" -> {
-                System.out.println("Введите телефон пользователя:");
-                String phone = ConsoleScanner.IN.nextLine();
-                userService.deleteByPhone(phone);
+                userService.showAll();
+                System.out.println("Введите id пользователя:");
+                String userId = ConsoleScanner.IN.nextLine();
+                userService.deleteById(Integer.parseInt(userId));
             }
             case "3" -> {
-                System.out.println("Введите телефон пользователя:");
-                String phone = ConsoleScanner.IN.nextLine();
-                System.out.println(userService.infoByPhone(phone));
-                ;
+                userService.showAll();
+                System.out.println("Введите id пользователя:");
+                String userId = ConsoleScanner.IN.nextLine();
+                ConsoleScanner.IN.nextLine();
+                return "USER" + userId;
             }
-            case "4" -> userService.assignEquipment();
-            case "5" -> userService.detachEquipment();
-            case "6" -> userService.showAll();
             case "9" -> {
                 return "BACK";
             }
