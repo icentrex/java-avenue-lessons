@@ -52,8 +52,7 @@ public class UserMenu implements Cursoring {
                 userService.showAll();
                 System.out.println("Введите id пользователя:");
                 String userId = ConsoleScanner.IN.nextLine();
-                ConsoleScanner.IN.nextLine();
-                return "USER" + userId;
+                ConsoleMainMenu.getInstance().setCursorObject(userService.findById(Integer.parseInt(userId)));
             }
             case "9" -> {
                 return "BACK";

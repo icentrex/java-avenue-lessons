@@ -10,15 +10,6 @@ import mentor1.service.UserService;
 
 public class Main {
     public static void main(String[] args) {
-        UserRepository userRepository = new UserRepository();
-        UserService userService = new UserService(userRepository);
-        EquipmentRepository equipmentRepository = new EquipmentRepository();
-        EquipmentService equipmentService = new EquipmentService();
-
-        // Консольный сервис запускается в конце инициализации
-        UserMenu userMenu = new UserMenu(userService);
-        EquipmentMenu equipmentMenu = new EquipmentMenu(equipmentService);
-        ConsoleMainMenu consoleMainMenu = new ConsoleMainMenu(userMenu, equipmentMenu);
-        consoleMainMenu.run();
+        ConsoleMainMenu.getInstance().run();
     }
 }

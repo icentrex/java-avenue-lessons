@@ -1,6 +1,7 @@
 package mentor1.model;
 
 import mentor1.Cursoring;
+import mentor1.menu.ConsoleMainMenu;
 import mentor1.menu.ConsoleScanner;
 
 import java.util.Objects;
@@ -53,7 +54,7 @@ public class User implements Cursoring {
 
     @Override
     public String getInfo() {
-        return "\n=== Меню \"Пользователь\" ===";
+        return this + "\n=== Меню \"Пользователь\" ===";
     }
 
     @Override
