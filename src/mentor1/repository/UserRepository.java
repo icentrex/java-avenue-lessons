@@ -14,21 +14,28 @@ public class UserRepository {
         users.add(new User("Ирина", "888-45-66"));
     }
 
-    public void save(User user) {
+    public void create(User user) {
+        if (users.contains(user)) {
+            System.out.println("Пользователь существует!");
+        }
         users.add(user);
     }
 
-    public boolean existsById(int id) {
-        if (users.get(id) != null) {
-            return true;
-        }
-        return false;
+    public void deleteById(int id) {
+        users.remove(id);
     }
 
-    public void showAllUsers() {
-        for (int i = 0; i < users.size(); i++) {
-            System.out.printf("id = %d, name = %s, phone = %s", i, users.get(i).getName(), users.get(i).getPhoneNumber());
-            System.out.println();
+    public void updateName(String name) {
+        User user = findByName(name);
+        if (user != null) {
+            user.setName(name);
+        }
+    }
+
+    public void updatePhone(String phone) {
+        User user = findByPhone(phone);
+        if (user != null) {
+            user.setPhoneNumber(phone);
         }
     }
 
@@ -36,7 +43,42 @@ public class UserRepository {
         return users.get(id);
     }
 
-    public void deleteById(int id) {
-        users.remove(id);
+    public User findByName(String name) {
+        for (User user : users) {
+            if (user.getName().equalsIgnoreCase(name)) {
+                return user;
+            }
+        }
+        return null;
+    }
+
+    public User findByPhone(String phone) {
+        for (User user : users) {
+            if (user.getPhoneNumber().equalsIgnoreCase(phone)) {
+                return user;
+            }
+        }
+        return null;
+    }
+
+    public int findUserIdByPhone(String phone) {
+        for (int index = 0; index < users.size(); index++) {
+            if (users.get(index).getPhoneNumber().equalsIgnoreCase(phone)) {
+                return index;
+            }
+        }
+        return 0;
+    }
+
+    public void showAllUsers() {
+        // Отсортировать через stream по ID
+        // List<User> filterList = users.stream().sorted().toList();
+        for (int index = 0; index < users.size(); index++) {
+            System.out.printf("id = %d, name = %s, phone = %s%n", index, users.get(index).getName(), users.get(index).getPhoneNumber());
+        }
+    }
+
+    public List<User> getUsers() {
+        return users;
     }
 }

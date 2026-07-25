@@ -1,10 +1,6 @@
 package mentor1.repository;
 
-import mentor1.model.Computer;
-import mentor1.model.Equipment;
-import mentor1.model.Monitor;
-import mentor1.model.Mouse;
-
+import mentor1.model.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,48 +16,66 @@ public class EquipmentRepository {
 
     public void add(Equipment equipment) {
         if (equipments.contains(equipment)) {
-            System.out.println("\nТехника уже существует!");
-        } else {
-            equipments.add(equipment);
-            System.out.println("Техника " + equipment + " добавлена в каталог");
+            System.out.println("Техника уже существует!");
+        }
+        equipments.add(equipment);
+    }
+
+    public void deleteById(int id) {
+        equipments.remove(id);
+    }
+
+    public Equipment findById(int id) {
+        return equipments.get(id);
+    }
+
+    public void updateName(String name) {
+        Equipment equipment = findByName(name);
+        if (equipment != null) {
+            equipment.setName(name);
         }
     }
 
-    public void showAll() {
-        System.out.println("\nСписок всей техники:");
+    public void updateSerialNumber(int number) {
+        Equipment equipment = findBySerialNumber(number);
+        if (equipment != null) {
+            equipment.setSerialNumber(number);
+        }
+    }
+
+    public Equipment findByName(String name) {
         for (Equipment equipment : equipments) {
-            System.out.println(equipment);
+            if (equipment.getName().equalsIgnoreCase(name)) {
+                return equipment;
+            }
+        }
+        return null;
+    }
+
+    public Equipment findBySerialNumber(int number) {
+        for (Equipment equipment : equipments) {
+            if (equipment.getSerialNumber() == number) {
+                return equipment;
+            }
+        }
+        return null;
+    }
+
+    public void showAll() {
+        for (int index = 0; index < equipments.size(); index++) {
+            System.out.printf("id = %d, name = %s, serialNumber = %d, userId = %d%n", index, equipments.get(index).getName(),
+                    equipments.get(index).getSerialNumber(), equipments.get(index).getUserId());
         }
     }
 
     public void assignTo(int equipmentId, int userId) {
         for (Equipment equipment : equipments) {
-            if (equipment.getId() == equipmentId) {
+            if (equipment.getSerialNumber() == equipmentId) {
                 equipment.setUserId(userId);
                 System.out.printf("\nТехника с id=%d выдана пользователю с id=%d", equipmentId, userId);
                 return;
             }
         }
         System.out.println("\nТехника не найдена");
-    }
-
-    public void returnFrom(int equipmentId, int userId) {
-        for (Equipment equipment : equipments) {
-            if (equipment.getId() == equipmentId) {
-                equipment.setUserId(0);
-                System.out.printf("\nТехника c id=%d принята от пользователя с id=%d", equipmentId, userId);
-                return;
-            }
-        }
-        System.out.println("\nТехника не найдена");
-    }
-
-    public void showEquipmentListByUser(int userId) {
-        System.out.println("\nСписок техники, выданной пользователю:");
-        for (Equipment equipment : equipments) {
-            if (equipment.getUserId() == userId) {
-                System.out.println(equipment);
-            }
-        }
     }
 }

@@ -1,5 +1,7 @@
 package mentor1.service;
 
+import mentor1.menu.EquipmentMenu;
+import mentor1.model.Equipment;
 import mentor1.model.User;
 import mentor1.repository.UserRepository;
 
@@ -11,27 +13,45 @@ public class UserService {
     }
 
     public void create(String name, String phone) {
-        userRepository.save(new User(name, phone));
+        userRepository.create(new User(name, phone));
+        System.out.println("Пользователь создан!");
     }
 
     public void deleteById(int id) {
-        if (!userRepository.existsById(id)) {
-            System.out.println("Пользователь с таким телефоном не найден!");
-            return;
-        }
         userRepository.deleteById(id);
+        System.out.println("Пользователь удален!");
+    }
+
+    public void update(String name, String phone) {
+        if (!name.isEmpty()) {
+            userRepository.updateName(name);
+            System.out.println("Имя обновлено!");
+        } else {
+            System.out.println("Введено пустое имя пользователя. Данные не обновлены.");
+        }
+
+        if (!phone.isEmpty()) {
+            userRepository.updatePhone(phone);
+            System.out.println("Телефон обновлен");
+        } else {
+            System.out.println("Введен пустой номер телефона. Данные не обновлены.");
+        }
     }
 
     public User findById(int id) {
         return userRepository.findById(id);
     }
 
-    public void assignEquipment() {
-
+    public int findUserIdByPhone(String phone) {
+        return userRepository.findUserIdByPhone(phone);
     }
 
-    public void detachEquipment() {
+    public void assignEquipment(int userId, int equipmentId) {
+        EquipmentMenu.getInstance().getEquipmentService().findById(equipmentId).setUserId(userId);
+    }
 
+    public void detachEquipment(int equipmentId) {
+        EquipmentMenu.getInstance().getEquipmentService().findById(equipmentId).setUserId(0);
     }
 
     public void showAll() {

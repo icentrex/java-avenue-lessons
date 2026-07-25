@@ -9,22 +9,14 @@ import mentor1.service.UserService;
 public class ConsoleMainMenu implements Cursoring {
 
     private static ConsoleMainMenu instance;
-    private final UserMenu userMenu; // переделать Сервисы под Синглтоны?
+    private final UserMenu userMenu;
     private final EquipmentMenu equipmentMenu;
     private Cursoring cursorObject;
     private boolean isNeedContinue = true;
 
     private ConsoleMainMenu() {
-        UserRepository userRepository = new UserRepository();
-        UserService userService = new UserService(userRepository);
-        EquipmentRepository equipmentRepository = new EquipmentRepository();
-        EquipmentService equipmentService = new EquipmentService();
-
-        // Консольный сервис запускается в конце инициализации
-        UserMenu userMenu = new UserMenu(userService);
-        EquipmentMenu equipmentMenu = new EquipmentMenu(equipmentService);
-        this.userMenu = userMenu;
-        this.equipmentMenu = equipmentMenu;
+        this.userMenu = UserMenu.getInstance();
+        this.equipmentMenu = EquipmentMenu.getInstance();
     }
 
     public static ConsoleMainMenu getInstance() {

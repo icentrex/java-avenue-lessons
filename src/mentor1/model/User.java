@@ -1,12 +1,15 @@
 package mentor1.model;
 
 import mentor1.Cursoring;
-import mentor1.menu.ConsoleMainMenu;
 import mentor1.menu.ConsoleScanner;
+import mentor1.menu.EquipmentMenu;
+import mentor1.menu.UserMenu;
 
 import java.util.Objects;
 
 public class User implements Cursoring {
+    //переписать репозиторий и остальное
+    private Integer id;
     private String name;
     private String phoneNumber;
 
@@ -54,7 +57,7 @@ public class User implements Cursoring {
 
     @Override
     public String getInfo() {
-        return this + "\n=== Меню \"Пользователь\" ===";
+        return this + "\n=== Меню \"Выбранный пользователь\" ===";
     }
 
     @Override
@@ -63,6 +66,8 @@ public class User implements Cursoring {
                 Доступные команды:
                 1 - Закрепить технику
                 2 - Открепить технику
+                3 - Изменить пользователя
+                4 - Удалить пользователя
                 9 - Назад в главное меню
                 0 - Выход из программы
                 """;
@@ -71,19 +76,41 @@ public class User implements Cursoring {
     @Override
     public String execute(String commandNumber) {
         switch (commandNumber) {
+            //Закрепить технику
             case "1" -> {
-                System.out.println("Введите id пользователя:");
-                String userId = ConsoleScanner.IN.nextLine();
-                //userService.assignEquipment();
+                EquipmentMenu.getInstance().getEquipmentService().showAll();
+                System.out.println("Введите id техники:");
+                String equipmentId = ConsoleScanner.IN.nextLine();
+                int currentUserId = UserMenu.getInstance().getUserService().findUserIdByPhone(this.phoneNumber);
+                UserMenu.getInstance().getUserService().assignEquipment(currentUserId, Integer.parseInt(equipmentId));
             }
+            //Открепить технику
             case "2" -> {
+                EquipmentMenu.getInstance().getEquipmentService().showAll();
+                System.out.println("Введите id техники:");
+                String equipmentId = ConsoleScanner.IN.nextLine();
+                UserMenu.getInstance().getUserService().detachEquipment(Integer.parseInt(equipmentId));
+            }
+            //Изменить пользователя
+            case "3" -> {
+                System.out.println("Введите корректное имя пользователя:");
+                String name = ConsoleScanner.IN.nextLine();
+                System.out.println("Введите корректный телефон пользователя:");
+                String phone = ConsoleScanner.IN.nextLine();
+                UserMenu.getInstance().getUserService().update(name, phone);
+            }
+            //Удалить пользователя
+            case "4" -> {
+                UserMenu.getInstance().getUserService().showAll();
                 System.out.println("Введите id пользователя:");
                 String userId = ConsoleScanner.IN.nextLine();
-                //userService.detachEquipment();
+                UserMenu.getInstance().getUserService().deleteById(Integer.parseInt(userId));
             }
+            //Выход в главное меню
             case "9" -> {
                 return "BACK";
             }
+            //Выход из программы
             case "0" -> {
                 return "EXIT";
             }
