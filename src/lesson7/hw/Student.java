@@ -3,9 +3,9 @@ package lesson7.hw;
 import java.util.Objects;
 
 public class Student {
-    private String fullname;
-    private int age;
-    private String subject;
+    private final String fullname;
+    private final int age;
+    private final String subject;
     private int grade;
 
     public Student(String fullname, int age, String subject) {
