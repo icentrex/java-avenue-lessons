@@ -2,83 +2,87 @@ package mentor1.repository;
 
 import mentor1.model.User;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class UserRepository {
-    private final List<User> users = new ArrayList<>(100);
+    private final Map<String, User> users = new HashMap<>();
 
     public UserRepository() {
-        users.add(new User("Сергей", "123-45-66"));
-        users.add(new User("Иван", "999-45-66"));
-        users.add(new User("Ирина", "888-45-66"));
+        User user = new User("Дмитрий", "123-45-66");
+        users.put(user.getId(), user);
+        User user1 = new User("Иван", "999-45-66");
+        users.put(user1.getId(), user1);
+        User user2 = new User("Ирина", "888-45-66");
+        users.put(user2.getId(), user2);
     }
 
-    public void create(User user) {
-        if (users.contains(user)) {
-            System.out.println("Пользователь существует!");
+    public User create(String name, String phone) {
+
+        if (isNameExist(name)) {
+            System.out.println("Пользователь с таким именем уже существует!");
+            return null;
         }
-        users.add(user);
+
+        if (isPhoneExist(phone)) {
+            System.out.println("Пользователь с таким телефоном уже существует!");
+            return null;
+        }
+
+        User user = new User(name, phone);
+        users.put(user.getId(), user);
+        return user;
     }
 
-    public void deleteById(int id) {
+    public void deleteById(String id) {
         users.remove(id);
     }
 
-    public void updateName(String name) {
-        User user = findByName(name);
+    public void updateName(String userId, String name) {
+        User user = findById(userId);
+
         if (user != null) {
             user.setName(name);
         }
+        //TODO проверять на дубликаты
     }
 
-    public void updatePhone(String phone) {
-        User user = findByPhone(phone);
+    public void updatePhone(String userId, String phone) {
+        User user = findById(userId);
+
         if (user != null) {
             user.setPhoneNumber(phone);
         }
+        //TODO проверять на дубликаты
     }
 
-    public User findById(int id) {
+    public User findById(String id) {
         return users.get(id);
     }
 
-    public User findByName(String name) {
-        for (User user : users) {
-            if (user.getName().equalsIgnoreCase(name)) {
-                return user;
-            }
-        }
-        return null;
+    public boolean isPhoneExist(String phone) {
+        return users.values().stream()
+                .anyMatch(user -> user.getPhoneNumber().equalsIgnoreCase(phone));
     }
 
-    public User findByPhone(String phone) {
-        for (User user : users) {
-            if (user.getPhoneNumber().equalsIgnoreCase(phone)) {
-                return user;
-            }
-        }
-        return null;
+    public boolean isNameExist(String name) {
+        return users.values().stream()
+                .anyMatch(user -> user.getName().equalsIgnoreCase(name));
     }
 
-    public int findUserIdByPhone(String phone) {
-        for (int index = 0; index < users.size(); index++) {
-            if (users.get(index).getPhoneNumber().equalsIgnoreCase(phone)) {
-                return index;
-            }
-        }
-        return 0;
+    public User getInfo(String userId) {
+        return users.get(userId);
     }
 
-    public void showAllUsers() {
-        // Отсортировать через stream по ID
-        // List<User> filterList = users.stream().sorted().toList();
-        for (int index = 0; index < users.size(); index++) {
-            System.out.printf("id = %d, name = %s, phone = %s%n", index, users.get(index).getName(), users.get(index).getPhoneNumber());
-        }
+    public List<User> getUsersList() {
+        return users.values().stream()
+                .sorted(Comparator.comparing(user -> user.getId()))
+                .collect(Collectors.toList());
     }
 
-    public List<User> getUsers() {
-        return users;
-    }
+//    public Map<String, User> getUsers() {
+//        return users;
+//    }
 }
+
+

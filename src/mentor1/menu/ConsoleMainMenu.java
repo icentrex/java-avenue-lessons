@@ -1,10 +1,6 @@
 package mentor1.menu;
 
 import mentor1.Cursoring;
-import mentor1.repository.EquipmentRepository;
-import mentor1.repository.UserRepository;
-import mentor1.service.EquipmentService;
-import mentor1.service.UserService;
 
 public class ConsoleMainMenu implements Cursoring {
 

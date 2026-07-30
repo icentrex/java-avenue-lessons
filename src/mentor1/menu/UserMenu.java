@@ -1,6 +1,7 @@
 package mentor1.menu;
 
 import mentor1.Cursoring;
+import mentor1.model.User;
 import mentor1.repository.UserRepository;
 import mentor1.service.UserService;
 
@@ -32,7 +33,7 @@ public class UserMenu implements Cursoring {
 
     @Override
     public String getCommands() {
-        userService.showAll();
+        userService.showUsersList();
         return """
                 Доступные команды:
                 1 - Создать пользователя
@@ -51,14 +52,20 @@ public class UserMenu implements Cursoring {
                 String name = ConsoleScanner.IN.nextLine();
                 System.out.println("Введите телефон пользователя:");
                 String phone = ConsoleScanner.IN.nextLine();
-                userService.create(name, phone);
+                User user = userService.create(name, phone);
+                if (user == null) {
+                    return "";
+                }
+                System.out.println("Пользователь создан!");
+                ConsoleMainMenu.getInstance().setCursorObject(user);
+                System.out.println("Пользователь выбран!");
             }
             //Выбрать
             case "2" -> {
-                userService.showAll();
+                userService.showUsersList();
                 System.out.println("Введите id пользователя:");
                 String userId = ConsoleScanner.IN.nextLine();
-                ConsoleMainMenu.getInstance().setCursorObject(userService.findById(Integer.parseInt(userId)));
+                ConsoleMainMenu.getInstance().setCursorObject(userService.findByUserId(userId));
             }
             //Выход в главное меню
             case "9" -> {

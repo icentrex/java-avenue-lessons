@@ -1,6 +1,7 @@
 package mentor1.menu;
 
 import mentor1.Cursoring;
+import mentor1.model.Equipment;
 import mentor1.repository.EquipmentRepository;
 import mentor1.service.EquipmentService;
 
@@ -12,10 +13,12 @@ public class EquipmentMenu implements Cursoring {
     private EquipmentMenu() {
         EquipmentRepository equipmentRepository = new EquipmentRepository();
         this.equipmentService = new EquipmentService(equipmentRepository);
-        instance = this;
     }
 
     public static EquipmentMenu getInstance() {
+        if (instance == null) {
+            instance = new EquipmentMenu();
+        }
         return instance;
     }
 
@@ -30,7 +33,7 @@ public class EquipmentMenu implements Cursoring {
 
     @Override
     public String getCommands() {
-        equipmentService.showAll();
+        equipmentService.showAllEquipments();
         return """
                 Доступные команды:
                 1 - Добавить технику
@@ -45,18 +48,23 @@ public class EquipmentMenu implements Cursoring {
         switch (commandNumber) {
             //Добавить технику
             case "1" -> {
-                equipmentService.showAll();
                 System.out.println("Введите тип оборудования:\n1 - Монитор\n2 - Мышка\n3 - Системный блок");
                 String type = ConsoleScanner.IN.nextLine();
                 System.out.println("Введите производителя:");
-                String name = ConsoleScanner.IN.nextLine();
+                String brandName = ConsoleScanner.IN.nextLine();
                 System.out.println("Введите серийный номер:");
                 String serialNumber = ConsoleScanner.IN.nextLine();
-                equipmentService.add(Integer.parseInt(type), name, Integer.parseInt(serialNumber));
+                Equipment equipment = equipmentService.add(Integer.parseInt(type), brandName, Integer.parseInt(serialNumber));
+                if (equipment == null) {
+                    return "";
+                }
+                System.out.println("Техника добавлена!");
+                ConsoleMainMenu.getInstance().setCursorObject(equipment);
+                System.out.println("Техника выбрана!");
             }
             //Выбрать технику
             case "2" -> {
-                equipmentService.showAll();
+                equipmentService.showAllEquipments();
                 System.out.println("Введите id оборудования:");
                 String equipmentId = ConsoleScanner.IN.nextLine();
                 ConsoleMainMenu.getInstance().setCursorObject(equipmentService.findById(Integer.parseInt(equipmentId)));
