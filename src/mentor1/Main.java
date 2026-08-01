@@ -1,9 +1,9 @@
 package mentor1;
 
-import mentor1.menu.ConsoleMainMenu;
+import mentor1.menu.MainMenu;
 
 public class Main {
     public static void main(String[] args) {
-        ConsoleMainMenu.getInstance().run();
+        MainMenu.getInstance().run();
     }
 }

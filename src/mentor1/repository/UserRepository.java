@@ -17,25 +17,13 @@ public class UserRepository {
         users.put(user2.getId(), user2);
     }
 
-    public User create(String name, String phone) {
-
-        if (isNameExist(name)) {
-            System.out.println("Пользователь с таким именем уже существует!");
-            return null;
-        }
-
-        if (isPhoneExist(phone)) {
-            System.out.println("Пользователь с таким телефоном уже существует!");
-            return null;
-        }
-
-        User user = new User(name, phone);
+    public User add(User user) {
         users.put(user.getId(), user);
         return user;
     }
 
-    public void deleteById(String id) {
-        users.remove(id);
+    public void deleteById(String userId) {
+        users.remove(userId);
     }
 
     public void updateName(String userId, String name) {
@@ -44,7 +32,6 @@ public class UserRepository {
         if (user != null) {
             user.setName(name);
         }
-        //TODO проверять на дубликаты
     }
 
     public void updatePhone(String userId, String phone) {
@@ -53,11 +40,10 @@ public class UserRepository {
         if (user != null) {
             user.setPhoneNumber(phone);
         }
-        //TODO проверять на дубликаты
     }
 
-    public User findById(String id) {
-        return users.get(id);
+    public User findById(String userId) {
+        return users.get(userId);
     }
 
     public boolean isPhoneExist(String phone) {
@@ -70,19 +56,11 @@ public class UserRepository {
                 .anyMatch(user -> user.getName().equalsIgnoreCase(name));
     }
 
-    public User getInfo(String userId) {
-        return users.get(userId);
-    }
-
     public List<User> getUsersList() {
         return users.values().stream()
                 .sorted(Comparator.comparing(user -> user.getId()))
                 .collect(Collectors.toList());
     }
-
-//    public Map<String, User> getUsers() {
-//        return users;
-//    }
 }
 
 

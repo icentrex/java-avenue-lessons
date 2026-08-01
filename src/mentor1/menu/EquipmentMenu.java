@@ -2,24 +2,13 @@ package mentor1.menu;
 
 import mentor1.Cursoring;
 import mentor1.model.Equipment;
-import mentor1.repository.EquipmentRepository;
 import mentor1.service.EquipmentService;
 
 public class EquipmentMenu implements Cursoring {
-
-    private static EquipmentMenu instance;
     private final EquipmentService equipmentService;
 
-    private EquipmentMenu() {
-        EquipmentRepository equipmentRepository = new EquipmentRepository();
-        this.equipmentService = new EquipmentService(equipmentRepository);
-    }
-
-    public static EquipmentMenu getInstance() {
-        if (instance == null) {
-            instance = new EquipmentMenu();
-        }
-        return instance;
+    public EquipmentMenu(EquipmentService equipmentService) {
+        this.equipmentService = equipmentService;
     }
 
     public EquipmentService getEquipmentService() {
@@ -59,7 +48,7 @@ public class EquipmentMenu implements Cursoring {
                     return "";
                 }
                 System.out.println("Техника добавлена!");
-                ConsoleMainMenu.getInstance().setCursorObject(equipment);
+                MainMenu.getInstance().setCursorObject(equipment);
                 System.out.println("Техника выбрана!");
             }
             //Выбрать технику
@@ -67,7 +56,7 @@ public class EquipmentMenu implements Cursoring {
                 equipmentService.showAllEquipments();
                 System.out.println("Введите id оборудования:");
                 String equipmentId = ConsoleScanner.IN.nextLine();
-                ConsoleMainMenu.getInstance().setCursorObject(equipmentService.findById(Integer.parseInt(equipmentId)));
+                MainMenu.getInstance().setCursorObject(equipmentService.findById(Integer.parseInt(equipmentId)));
             }
             case "9" -> {
                 return "BACK";

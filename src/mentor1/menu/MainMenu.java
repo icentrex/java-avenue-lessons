@@ -1,23 +1,50 @@
 package mentor1.menu;
 
 import mentor1.Cursoring;
+import mentor1.repository.EquipmentRepository;
+import mentor1.repository.UserRepository;
+import mentor1.service.EquipmentService;
+import mentor1.service.UserService;
 
-public class ConsoleMainMenu implements Cursoring {
-
-    private static ConsoleMainMenu instance;
+public class MainMenu implements Cursoring {
+    private static MainMenu instance;
     private final UserMenu userMenu;
     private final EquipmentMenu equipmentMenu;
+    private final UserService userService;
+    private final EquipmentService equipmentService;
+    private final ConsoleDisplay display = new ConsoleDisplay();
     private Cursoring cursorObject;
     private boolean isNeedContinue = true;
 
-    private ConsoleMainMenu() {
-        this.userMenu = UserMenu.getInstance();
-        this.equipmentMenu = EquipmentMenu.getInstance();
+    private MainMenu() {
+        UserRepository userRepository = new UserRepository();
+        EquipmentRepository equipmentRepository = new EquipmentRepository();
+
+        this.userService = new UserService(userRepository);
+        this.equipmentService = new EquipmentService(equipmentRepository);
+
+        userService.setEquipmentService(equipmentService);
+        equipmentService.setUserService(userService);
+
+        this.userMenu = new UserMenu(userService);
+        this.equipmentMenu = new EquipmentMenu(equipmentService);
     }
 
-    public static ConsoleMainMenu getInstance() {
+    public UserService getUserService() {
+        return userService;
+    }
+
+    public EquipmentService getEquipmentService() {
+        return equipmentService;
+    }
+
+    public ConsoleDisplay getDisplay() {
+        return display;
+    }
+
+    public static MainMenu getInstance() {
         if (instance == null) {
-            instance = new ConsoleMainMenu();
+            instance = new MainMenu();
         }
         return instance;
     }

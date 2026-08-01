@@ -1,6 +1,5 @@
 package mentor1.service;
 
-import mentor1.menu.UserMenu;
 import mentor1.model.*;
 import mentor1.repository.EquipmentRepository;
 
@@ -8,9 +7,14 @@ import java.util.List;
 
 public class EquipmentService {
     private final EquipmentRepository equipmentRepository;
+    private UserService userService;
 
     public EquipmentService(EquipmentRepository equipmentRepository) {
         this.equipmentRepository = equipmentRepository;
+    }
+
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 
     public Equipment add(int type, String brandName, int serialNumber) {
@@ -22,7 +26,10 @@ public class EquipmentService {
     }
 
     public Equipment findById(int id) {
-        return equipmentRepository.findById(id);
+//        Equipment equipment = equipmentRepository.findById(id);
+//        equipment.setUser(userService.findByEquipmentId(this.id));
+//        return equipment;
+        return null;
     }
 
     public void updateBrandName(int currentEquipmentId, String brandName) {
@@ -48,7 +55,6 @@ public class EquipmentService {
                     equipment.getSerialNumber(),
                     equipment.getUserId());
         }
-
     }
 
     //метод для UserMenu
@@ -64,15 +70,13 @@ public class EquipmentService {
             return;
         }
 
-        User user = UserMenu.getInstance().getUserService().findByUserId(assignedUserId);
-
+        User user = userService.findByUserId(assignedUserId);
         if (user == null) {
             System.out.println("Такого пользователя не существует");
             return;
         }
 
         System.out.printf("userId = %s, name = %s, phone = %s%n", user.getId(), user.getName(), user.getPhoneNumber());
-
     }
 
     //метод для UserMenu
@@ -110,6 +114,6 @@ public class EquipmentService {
     }
 
     public void showUsersList() {
-        UserMenu.getInstance().getUserService().showUsersList();
+        userService.getUsersList();
     }
 }

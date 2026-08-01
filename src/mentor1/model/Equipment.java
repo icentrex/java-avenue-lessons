@@ -1,9 +1,8 @@
 package mentor1.model;
 
 import mentor1.Cursoring;
-import mentor1.menu.ConsoleMainMenu;
+import mentor1.menu.MainMenu;
 import mentor1.menu.ConsoleScanner;
-import mentor1.menu.EquipmentMenu;
 
 import java.util.Objects;
 
@@ -15,11 +14,13 @@ public abstract class Equipment implements Cursoring {
     private int serialNumber;
     private String userId;
 
+    //private User currentUser;
     public Equipment(String brandName, int serialNumber) {
         this.id = nextId++;
         this.brandName = brandName;
         this.serialNumber = serialNumber;
         this.userId = "Не закреплена";
+        //currentUser = null;
     }
 
     public String getBrandName() {
@@ -81,9 +82,11 @@ public abstract class Equipment implements Cursoring {
     @Override
     public String getCommands() {
         System.out.println("Информация о технике:");
-        EquipmentMenu.getInstance().getEquipmentService().showEquipmentInfo(this.id);
+        // EquipmentMenu.getInstance().getEquipmentService().showEquipmentInfo(this.id);
+        // Вывод Ситтем аут тут!
         System.out.println("Закреплена за пользователем:");
-        EquipmentMenu.getInstance().getEquipmentService().showAssignedUserByEquipmentId(this.id);
+        MainMenu.getInstance().getEquipmentService().showAssignedUserByEquipmentId(this.id);
+        // Систем аут брать из currentUser данного класса
         System.out.println();
         return """
                 Доступные команды:
@@ -101,20 +104,20 @@ public abstract class Equipment implements Cursoring {
         switch (commandNumber) {
             //Закрепить технику
             case "1" -> {
-                EquipmentMenu.getInstance().getEquipmentService().showUsersList();
+                MainMenu.getInstance().getEquipmentService().showUsersList();
                 System.out.println("Введите id пользователя:");
                 String userId = ConsoleScanner.IN.nextLine();
-                EquipmentMenu.getInstance().getEquipmentService().assignEquipment(userId, this.id);
+                MainMenu.getInstance().getEquipmentService().assignEquipment(userId, this.id);
             }
             //Открепить технику
             case "2" -> {
                 System.out.println("Открепляю технику от пользователя...");
-                EquipmentMenu.getInstance().getEquipmentService().detachEquipment(this.id);
+                MainMenu.getInstance().getEquipmentService().detachEquipment(this.id);
                 System.out.println("Техника откреплена");
             }
             //Изменить технику
             case "3" -> {
-                EquipmentMenu.getInstance().getEquipmentService().showAllEquipments();
+                MainMenu.getInstance().getEquipmentService().showAllEquipments();
                 System.out.println("Что хотите скорректировать?%n1 - Производителя%n2 - Серийный номер%n3 - Тип устройства(в разработке)");
                 String choice = ConsoleScanner.IN.nextLine();
                 switch (choice) {
@@ -125,7 +128,7 @@ public abstract class Equipment implements Cursoring {
                             System.out.println("Недопустимо пустое имя!");
                             return "";
                         }
-                        EquipmentMenu.getInstance().getEquipmentService().updateBrandName(this.id, brandName);
+                        MainMenu.getInstance().getEquipmentService().updateBrandName(this.id, brandName);
                         System.out.println("Наименование производителя обновлено!");
                     }
                     case "2" -> {
@@ -135,7 +138,7 @@ public abstract class Equipment implements Cursoring {
                             System.out.println("Недопустим пустой серийный номер!");
                             return "";
                         }
-                        EquipmentMenu.getInstance().getEquipmentService().updateSerialNumber(this.id, Integer.parseInt(serialNumber));
+                        MainMenu.getInstance().getEquipmentService().updateSerialNumber(this.id, Integer.parseInt(serialNumber));
                         System.out.println("Серийный номер обновлен!");
                     }
 //                    case "3" -> {
@@ -152,13 +155,13 @@ public abstract class Equipment implements Cursoring {
             }
             //Удалить технику
             case "4" -> {
-                EquipmentMenu.getInstance().getEquipmentService().showAllEquipments();
+                MainMenu.getInstance().getEquipmentService().showAllEquipments();
                 System.out.println("Удаляю текущую технику...");
                 System.out.println("Проверяю закреплена ли она за пользователем...");
                 //TODO проверку на закрепленность
-                EquipmentMenu.getInstance().getEquipmentService().deleteById(this.id);
+                MainMenu.getInstance().getEquipmentService().deleteById(this.id);
                 System.out.println("Техника удалена");
-                ConsoleMainMenu.getInstance().setCursorObject(null);
+                MainMenu.getInstance().setCursorObject(null);
                 System.out.println("Перехожу в главное меню");
 
 

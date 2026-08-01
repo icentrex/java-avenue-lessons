@@ -17,6 +17,10 @@ public class EquipmentRepository {
         this.equipments.put(equipment2.getId(), equipment2);
     }
 
+    public Map<Integer, Equipment> getEquipments() {
+        return equipments;
+    }
+
     public Equipment add(int type, String brandName, int serialNumber) {
 
         if (isSerialNumberExist(serialNumber)) {

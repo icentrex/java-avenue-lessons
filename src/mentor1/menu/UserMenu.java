@@ -2,24 +2,24 @@ package mentor1.menu;
 
 import mentor1.Cursoring;
 import mentor1.model.User;
-import mentor1.repository.UserRepository;
 import mentor1.service.UserService;
 
+import java.util.List;
+
 public class UserMenu implements Cursoring {
-
-    private static UserMenu instance;
     private final UserService userService;
+    private MainMenu menu;
+    private DisplayReadWriter display;
 
-    private UserMenu() {
-        UserRepository userRepository = new UserRepository();
-        this.userService = new UserService(userRepository);
+    public UserMenu(UserService userService) {
+        this.userService = userService;
     }
 
-    public static UserMenu getInstance() {
-        if (instance == null) {
-            instance = new UserMenu();
+    public void init() {
+        if (menu == null) {
+            menu = MainMenu.getInstance();
+            display = menu.getDisplay();
         }
-        return instance;
     }
 
     public UserService getUserService() {
@@ -33,7 +33,8 @@ public class UserMenu implements Cursoring {
 
     @Override
     public String getCommands() {
-        userService.showUsersList();
+        init();
+        display.write(userService.getUsersList());
         return """
                 Доступные команды:
                 1 - Создать пользователя
@@ -45,27 +46,25 @@ public class UserMenu implements Cursoring {
 
     @Override
     public String execute(String commandNumber) {
+        init();
         switch (commandNumber) {
             //Создать
             case "1" -> {
-                System.out.println("Введите имя пользователя:");
-                String name = ConsoleScanner.IN.nextLine();
-                System.out.println("Введите телефон пользователя:");
-                String phone = ConsoleScanner.IN.nextLine();
+                String name = display.writeAndRead(List.of("Введите имя пользователя:"));
+                String phone = display.writeAndRead(List.of("Введите телефон пользователя:"));
                 User user = userService.create(name, phone);
                 if (user == null) {
+                    display.write(List.of("Пользователь с таким именем и телефоном уже существует!"));
                     return "";
                 }
-                System.out.println("Пользователь создан!");
-                ConsoleMainMenu.getInstance().setCursorObject(user);
-                System.out.println("Пользователь выбран!");
+                MainMenu.getInstance().setCursorObject(user);
+                display.write(List.of("Пользователь создан!", "Пользователь выбран!"));
             }
             //Выбрать
             case "2" -> {
-                userService.showUsersList();
-                System.out.println("Введите id пользователя:");
-                String userId = ConsoleScanner.IN.nextLine();
-                ConsoleMainMenu.getInstance().setCursorObject(userService.findByUserId(userId));
+                display.write(userService.getUsersList());
+                String userId = display.writeAndRead(List.of("Введите id пользователя:"));
+                menu.setCursorObject(userService.findByUserId(userId));
             }
             //Выход в главное меню
             case "9" -> {
@@ -75,7 +74,7 @@ public class UserMenu implements Cursoring {
             case "0" -> {
                 return "EXIT";
             }
-            default -> System.out.println("Команды не существует. Попробуйте еще раз!");
+            default -> display.write(List.of("Команды не существует. Попробуйте еще раз!"));
         }
         return "";
     }
