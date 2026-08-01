@@ -15,6 +15,16 @@ public class ChildCar extends Car {
         System.out.println("Включаю детскую музыку");
     }
 
+    @Override
+    public void move() {
+        System.out.println("Маленькая ножка в сандалике давит на газ. Медленно начинаю двигаться вперед.");
+    }
+
+    @Override
+    public void stopOnParking() {
+        System.out.println("Маленькая ножка в сандалике давит на тормоз. Медленно сбавляю скорость и останавливаюсь.");
+    }
+
     public RemoteControl getRemoteControl() {
         return remoteControl;
     }

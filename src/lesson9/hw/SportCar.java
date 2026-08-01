@@ -21,6 +21,16 @@ public class SportCar extends Car {
         System.out.println("Поднимаю спойлер");
     }
 
+    @Override
+    public void move() {
+        System.out.println("Мощно рву с места");
+    }
+
+    @Override
+    public void stopOnParking() {
+        System.out.println("Плавно и уверенно сбавляю скорость и останавливаюсь");
+    }
+
     public double getEnginePower() {
         return enginePower;
     }

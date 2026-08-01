@@ -12,7 +12,17 @@ public class SnowRemovalCar extends Car {
     }
 
     public void startSnowRemoval() {
-        System.out.println("Начинаю уборку снега");
+        System.out.println("Опускаю ковш, начинаю уборку снега");
+    }
+
+    @Override
+    public void move() {
+        System.out.println("Начинаю движение в направлении сугроба");
+    }
+
+    @Override
+    public void stopOnParking() {
+        System.out.println("Торможу. Уборка снега окончена");
     }
 
     public RemovalBucket getRemovalBucket() {
