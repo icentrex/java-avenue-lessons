@@ -10,25 +10,37 @@ public class GradeBookDB {
             new Student("АбдуловаЕД", 17, "Компьютерные сети")
     };
 
-    public void addGrade(String fullname, int grade) {
-        for (Student student : students) {
-            if (student.getFullname().equalsIgnoreCase(fullname)) {
-                student.setGrade(grade);
-            }
-        }
+    public void addGrade(int id, int grade) {
+        students[id].setGrade(grade);
+        System.out.printf("Оценка %s добавлена!%n", students[id].getFullname());
     }
 
-    public void addSomeGrades(String studentsFullnames, String grades) {
-        String[] fullnamesValues = studentsFullnames.split("\\s+");
-        String[] gradesValues = grades.split("\\s+");
-        for (int index = 0; index < fullnamesValues.length; index++) {
-            addGrade(fullnamesValues[index], Integer.parseInt(gradesValues[index]));
+    public void addSeveralGrades(String studentsIdString, String studentsGradesString) {
+        String[] idValues = studentsIdString.split("\\s+");
+        String[] gradeValues = studentsGradesString.split("\\s+");
+        for (int index = 0; index < idValues.length; index++) {
+            addGrade(Integer.parseInt(idValues[index]), Integer.parseInt(gradeValues[index]));
         }
     }
 
     public void showGrades() {
-        for (Student student : students) {
-            System.out.println(student);
+        for (int index = 0; index < students.length; index++) {
+            System.out.printf("Id: %d, Имя: %s, Возраст: %d, Предмет: %s, Оценка: %d%n",
+                    index,
+                    students[index].getFullname(),
+                    students[index].getAge(),
+                    students[index].getSubject(),
+                    students[index].getGrade());
+        }
+    }
+
+    public void showStudents() {
+        for (int index = 0; index < students.length; index++) {
+            System.out.printf("Id: %d, Имя: %s, Возраст: %d, Предмет: %s%n",
+                    index,
+                    students[index].getFullname(),
+                    students[index].getAge(),
+                    students[index].getSubject());
         }
     }
 
