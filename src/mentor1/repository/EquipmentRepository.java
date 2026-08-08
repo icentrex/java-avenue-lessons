@@ -7,48 +7,22 @@ import java.util.stream.Collectors;
 
 public class EquipmentRepository {
     private final Map<Integer, Equipment> equipments = new HashMap<>();
+    private int nextId = 1;
 
     public EquipmentRepository() {
-        Equipment equipment = new Monitor("Samsung", 1);
-        this.equipments.put(equipment.getId(), equipment);
-        Equipment equipment1 = new Mouse("Logitech", 2);
-        this.equipments.put(equipment1.getId(), equipment1);
-        Equipment equipment2 = new Computer("Dell", 3);
-        this.equipments.put(equipment2.getId(), equipment2);
+        add(new Monitor("Samsung", 1));
+        add(new Mouse("Logitech", 2));
+        add(new Computer("Dell", 3));
     }
 
     public Map<Integer, Equipment> getEquipments() {
         return equipments;
     }
 
-    public Equipment add(int type, String brandName, int serialNumber) {
-
-        if (isSerialNumberExist(serialNumber)) {
-            System.out.println("Техника с таким серийным номером уже существует!");
-            return null;
-        }
-
-        switch (type) {
-            case 1 -> {
-                Equipment monitor = new Monitor(brandName, serialNumber);
-                equipments.put(monitor.getId(), monitor);
-                return monitor;
-            }
-            case 2 -> {
-                Equipment mouse = new Mouse(brandName, serialNumber);
-                equipments.put(mouse.getId(), mouse);
-                return mouse;
-            }
-            case 3 -> {
-                Equipment computer = new Computer(brandName, serialNumber);
-                equipments.put(computer.getId(), computer);
-                return computer;
-            }
-            default -> {
-                System.out.println("Такого оборудования не существует!");
-                return null;
-            }
-        }
+    public void add(Equipment equipment) {
+        equipment.setId(nextId);
+        equipments.put(nextId, equipment);
+        nextId++;
     }
 
     public void deleteById(int equipmentId) {
@@ -89,20 +63,20 @@ public class EquipmentRepository {
     }
 
     //метод для UserMenu
-    public List<Equipment> getUserEquipments(String userId) {
+    public List<Equipment> getUserEquipments(int userId) {
         return equipments.values().stream()
-                .filter(equipment -> equipment.getUserId().equalsIgnoreCase(userId))
+                .filter(equipment -> equipment.getUserId() == userId)
                 .collect(Collectors.toList());
     }
 
     //метод для UserMenu
     public List<Equipment> getFreeEquipments() {
         return equipments.values().stream()
-                .filter((equipment -> equipment.getUserId().equalsIgnoreCase("Не закреплена")))
+                .filter((equipment -> equipment.getUserId() == 0))
                 .collect(Collectors.toList());
     }
 
-    public void assignEquipment(String userId, int equipmentId) {
+    public void assignEquipment(int userId, int equipmentId) {
         Equipment equipment = equipments.get(equipmentId);
 
         if (equipment != null) {
@@ -114,11 +88,11 @@ public class EquipmentRepository {
         Equipment equipment = equipments.get(equipmentId);
 
         if (equipment != null) {
-            equipment.setUserId("Не закреплено");
+            equipment.setUserId(0);
         }
     }
 
-    public String getAssignedUserByEquipmentId(int equipmentId) {
+    public int getAssignedUserByEquipmentId(int equipmentId) {
         return equipments.get(equipmentId).getUserId();
     }
 }

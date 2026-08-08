@@ -20,56 +20,53 @@ public class UserService {
     }
 
     public User create(String name, String phone) {
-        if (userRepository.isNameExist(name) && userRepository.isPhoneExist(phone)) {
+        if (userRepository.isPhoneExist(phone)) {
             return null;
         }
-        return userRepository.add(new User(name, phone));
+        User user = new User(name, phone);
+        userRepository.add(user);
+        return user;
     }
 
-    public List<String> deleteByUserId(String userId) {
+    public String deleteByUserId(int userId) {
         List<Equipment> userEquipments = equipmentService.getUserEquipments(userId);
 
         if (userEquipments.isEmpty()) {
             userRepository.deleteById(userId);
             MainMenu.getInstance().setCursorObject(null);
-            return List.of("Закрепленная техника отсутствует!", "Пользователь удален", "Перехожу в главное меню");
+            return "200 OK";
         }
-        return List.of("Удалить нельзя. За пользователем закреплена техника!");
+        //уточнить код HTTP
+        return "300";
     }
 
-    public void updateName(String userId, String name) {
+    public String updateName(int userId, String name) {
         userRepository.updateName(userId, name);
+        return "200 OK";
     }
 
-    public void updatePhone(String userId, String phone) {
+    public String updatePhone(int userId, String phone) {
         if (userRepository.isPhoneExist(phone)) {
             System.out.println("Пользователь с таким номером телефона уже существует!");
-            return;
+            //уточнить код HTTP
+            return "300";
         }
         userRepository.updatePhone(userId, phone);
+        return "200 OK";
     }
 
-    public User findByUserId(String userId) {
+    public User findByUserId(int userId) {
         return userRepository.findById(userId);
     }
 
-    public void assignEquipment(String userId, int equipmentId) {
+    public String assignEquipment(int userId, int equipmentId) {
         equipmentService.assignEquipment(userId, equipmentId);
+        return "200 OK";
     }
 
-    public void detachEquipment(int equipmentId) {
+    public String detachEquipment(int equipmentId) {
         equipmentService.detachEquipment(equipmentId);
-    }
-
-    public List<String> getInfo(String userId) {
-        User user = userRepository.findById(userId);
-
-        if (user == null) {
-            return List.of("Пользователя с таким id не существует");
-        }
-
-        return List.of(String.format("userId = %s, name = %s, phone = %s%n",
-                user.getId(), user.getName(), user.getPhoneNumber()));
+        return "200 OK";
     }
 
     public List<String> getUsersList() {
@@ -103,7 +100,7 @@ public class UserService {
                 .toList();
     }
 
-    public List<String> getUserEquipments(String userId) {
+    public List<String> getUserEquipments(int userId) {
         List<Equipment> userEquipments = equipmentService.getUserEquipments(userId);
 
         if (userEquipments.isEmpty()) {

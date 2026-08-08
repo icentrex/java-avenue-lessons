@@ -1,27 +1,34 @@
 package mentor1.model;
 
-import mentor1.Cursoring;
+import mentor1.menu.Cursoring;
+import mentor1.menu.DisplayReadWriter;
 import mentor1.menu.MainMenu;
-import mentor1.menu.ConsoleScanner;
+import mentor1.service.EquipmentService;
 
+import java.util.List;
 import java.util.Objects;
 
-public abstract class Equipment implements Cursoring {
+public abstract class Equipment implements Cursoring, DisplayReadWriter {
 
-    private final int id;
-    private static int nextId = 0;
+    private int id;
     private String brandName;
     private int serialNumber;
-    private String userId;
+    private int userId;
+    //так норм делать или лучше метод инит оставить?
+    private EquipmentService equipmentService = MainMenu.getInstance().getEquipmentService();
 
     //private User currentUser;
     public Equipment(String brandName, int serialNumber) {
-        this.id = nextId++;
         this.brandName = brandName;
         this.serialNumber = serialNumber;
-        this.userId = "Не закреплена";
+        this.userId = 0;
         //currentUser = null;
     }
+
+//    public void init() {
+//        MainMenu menu = MainMenu.getInstance();
+//        equipmentService = menu.getEquipmentService();
+//    }
 
     public String getBrandName() {
         return this.brandName;
@@ -31,7 +38,7 @@ public abstract class Equipment implements Cursoring {
         return serialNumber;
     }
 
-    public String getUserId() {
+    public int getUserId() {
         return userId;
     }
 
@@ -39,7 +46,7 @@ public abstract class Equipment implements Cursoring {
         return id;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
 
@@ -49,6 +56,10 @@ public abstract class Equipment implements Cursoring {
 
     public void setSerialNumber(int serialNumber) {
         this.serialNumber = serialNumber;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     @Override
@@ -76,18 +87,20 @@ public abstract class Equipment implements Cursoring {
 
     @Override
     public String getInfo() {
-        return this + "\n=== Меню \"Выбранное оборудование\" ===";
+        return "\n=== Меню \"Выбранное оборудование\" ===\nИнформация о технике:" +
+                String.format("id = %d, name = %s, serialNumber = %d, userId = %s%n",
+                        this.id,
+                        this.brandName,
+                        this.serialNumber,
+                        this.userId);
     }
 
     @Override
     public String getCommands() {
-        System.out.println("Информация о технике:");
-        // EquipmentMenu.getInstance().getEquipmentService().showEquipmentInfo(this.id);
-        // Вывод Ситтем аут тут!
-        System.out.println("Закреплена за пользователем:");
-        MainMenu.getInstance().getEquipmentService().showAssignedUserByEquipmentId(this.id);
+        //        init();
+        DisplayReadWriter.write(List.of("Закреплена за пользователем:"));
+        equipmentService.showAssignedUserByEquipmentId(this.id);
         // Систем аут брать из currentUser данного класса
-        System.out.println();
         return """
                 Доступные команды:
                 1 - Закрепить технику
@@ -101,45 +114,46 @@ public abstract class Equipment implements Cursoring {
 
     @Override
     public String execute(String commandNumber) {
+        //        init();
         switch (commandNumber) {
             //Закрепить технику
             case "1" -> {
-                MainMenu.getInstance().getEquipmentService().showUsersList();
-                System.out.println("Введите id пользователя:");
-                String userId = ConsoleScanner.IN.nextLine();
-                MainMenu.getInstance().getEquipmentService().assignEquipment(userId, this.id);
+                equipmentService.showUsersList();
+                String userId = DisplayReadWriter.writeAndRead(List.of("Введите id пользователя:"));
+                equipmentService.assignEquipment(Integer.parseInt(userId), this.id);
             }
             //Открепить технику
             case "2" -> {
-                System.out.println("Открепляю технику от пользователя...");
-                MainMenu.getInstance().getEquipmentService().detachEquipment(this.id);
-                System.out.println("Техника откреплена");
+                DisplayReadWriter.write(List.of("Открепляю технику от пользователя..."));
+                equipmentService.detachEquipment(this.id);
+                DisplayReadWriter.write(List.of("Техника откреплена"));
             }
             //Изменить технику
             case "3" -> {
-                MainMenu.getInstance().getEquipmentService().showAllEquipments();
-                System.out.println("Что хотите скорректировать?%n1 - Производителя%n2 - Серийный номер%n3 - Тип устройства(в разработке)");
-                String choice = ConsoleScanner.IN.nextLine();
+                equipmentService.showAllEquipments();
+                String choice = DisplayReadWriter.writeAndRead(
+                        List.of("Что хотите скорректировать?%n" +
+                                "1 - Производителя%n" +
+                                "2 - Серийный номер%n" +
+                                "3 - Тип устройства(в разработке)"));
                 switch (choice) {
                     case "1" -> {
-                        System.out.println("Введите корректное наименование производителя:");
-                        String brandName = ConsoleScanner.IN.nextLine();
+                        String brandName = DisplayReadWriter.writeAndRead(List.of("Введите корректное наименование производителя:"));
                         if (brandName.isEmpty()) {
-                            System.out.println("Недопустимо пустое имя!");
+                            DisplayReadWriter.write(List.of("Недопустимо пустое имя!"));
                             return "";
                         }
-                        MainMenu.getInstance().getEquipmentService().updateBrandName(this.id, brandName);
-                        System.out.println("Наименование производителя обновлено!");
+                        equipmentService.updateBrandName(this.id, brandName);
+                        DisplayReadWriter.write(List.of("Наименование производителя обновлено!"));
                     }
                     case "2" -> {
-                        System.out.println("Введите корректный серийный номер:");
-                        String serialNumber = ConsoleScanner.IN.nextLine();
+                        String serialNumber = DisplayReadWriter.writeAndRead(List.of("Введите корректный серийный номер:"));
                         if (serialNumber.isEmpty()) {
-                            System.out.println("Недопустим пустой серийный номер!");
+                            DisplayReadWriter.write(List.of("Недопустим пустой серийный номер!"));
                             return "";
                         }
-                        MainMenu.getInstance().getEquipmentService().updateSerialNumber(this.id, Integer.parseInt(serialNumber));
-                        System.out.println("Серийный номер обновлен!");
+                        equipmentService.updateSerialNumber(this.id, Integer.parseInt(serialNumber));
+                        DisplayReadWriter.write(List.of("Серийный номер обновлен!"));
                     }
 //                    case "3" -> {
 //                        System.out.println("Введите корректный тип устройства%n1 - Монитор%n2 - Мышка%n3 - Системный блок");
@@ -150,21 +164,17 @@ public abstract class Equipment implements Cursoring {
 //                        EquipmentMenu.getInstance().getEquipmentService().updateDeviceType(this.id, deviceType);
 //                        System.out.println("Тип устройства обновлен!");
 //                    }
-                    default -> System.out.println("Команды не существует. Попробуйте еще раз!");
+                    default -> DisplayReadWriter.write(List.of("Команды не существует. Попробуйте еще раз!"));
                 }
             }
             //Удалить технику
             case "4" -> {
-                MainMenu.getInstance().getEquipmentService().showAllEquipments();
-                System.out.println("Удаляю текущую технику...");
-                System.out.println("Проверяю закреплена ли она за пользователем...");
+                equipmentService.showAllEquipments();
+                DisplayReadWriter.write(List.of("Удаляю текущую технику...", "Проверяю закреплена ли она за пользователем..."));
                 //TODO проверку на закрепленность
-                MainMenu.getInstance().getEquipmentService().deleteById(this.id);
-                System.out.println("Техника удалена");
+                equipmentService.deleteById(this.id);
                 MainMenu.getInstance().setCursorObject(null);
-                System.out.println("Перехожу в главное меню");
-
-
+                DisplayReadWriter.write(List.of("Техника удалена", "Перехожу в главное меню"));
             }
             //Выход в главное меню
             case "9" -> {

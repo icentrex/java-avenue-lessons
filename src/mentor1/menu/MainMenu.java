@@ -1,18 +1,18 @@
 package mentor1.menu;
 
-import mentor1.Cursoring;
 import mentor1.repository.EquipmentRepository;
 import mentor1.repository.UserRepository;
 import mentor1.service.EquipmentService;
 import mentor1.service.UserService;
 
-public class MainMenu implements Cursoring {
+import java.util.List;
+
+public class MainMenu implements Cursoring, DisplayReadWriter {
     private static MainMenu instance;
     private final UserMenu userMenu;
     private final EquipmentMenu equipmentMenu;
     private final UserService userService;
     private final EquipmentService equipmentService;
-    private final ConsoleDisplay display = new ConsoleDisplay();
     private Cursoring cursorObject;
     private boolean isNeedContinue = true;
 
@@ -38,10 +38,6 @@ public class MainMenu implements Cursoring {
         return equipmentService;
     }
 
-    public ConsoleDisplay getDisplay() {
-        return display;
-    }
-
     public static MainMenu getInstance() {
         if (instance == null) {
             instance = new MainMenu();
@@ -51,10 +47,10 @@ public class MainMenu implements Cursoring {
 
     public void run() {
         while (isNeedContinue) {
-            System.out.println(this.getInfo());
-            System.out.println(this.getCommands());
-            String input = ConsoleScanner.IN.nextLine();
-            System.out.println(this.execute(input));
+            DisplayReadWriter.write(List.of(this.getInfo()));
+            DisplayReadWriter.write(List.of(this.getCommands()));
+            String input = DisplayReadWriter.read();
+            DisplayReadWriter.write(List.of(this.execute(input)));
         }
     }
 

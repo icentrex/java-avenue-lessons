@@ -1,6 +1,6 @@
 package mentor1.model;
 
-import mentor1.Cursoring;
+import mentor1.menu.Cursoring;
 import mentor1.menu.DisplayReadWriter;
 import mentor1.menu.MainMenu;
 import mentor1.service.UserService;
@@ -8,28 +8,23 @@ import mentor1.service.UserService;
 import java.util.List;
 import java.util.Objects;
 
-public class User implements Cursoring {
-    private final String id;
-    private static int nextId = 0;
+public class User implements Cursoring, DisplayReadWriter {
+    private int id;
     private String name;
     private String phoneNumber;
-    private MainMenu menu;
-    private DisplayReadWriter display;
+    //так норм делать? или оставить метод инит?
+    //так не получиться. Мы пытаемся получиться инстанс которого еще нет.
+//    private final UserService userService = MainMenu.getInstance().getUserService();
     private UserService userService;
 
     public User(String name, String phoneNumber) {
         this.name = name;
         this.phoneNumber = phoneNumber;
-        this.id = nextId + name.substring(0, 1).toLowerCase() + phoneNumber.charAt(0);
-        nextId++;
     }
 
     public void init() {
-        if (menu == null) {
-            menu = MainMenu.getInstance();
-            display = menu.getDisplay();
-            userService = menu.getUserService();
-        }
+        MainMenu menu = MainMenu.getInstance();
+        userService = menu.getUserService();
     }
 
     public String getName() {
@@ -40,8 +35,12 @@ public class User implements Cursoring {
         return this.phoneNumber;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void setName(String name) {
@@ -55,7 +54,7 @@ public class User implements Cursoring {
     @Override
     public String toString() {
         return "User{" +
-                "id='" + id + '\'' +
+                "id=" + id +
                 ", name='" + name + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 '}';
@@ -65,7 +64,7 @@ public class User implements Cursoring {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) && Objects.equals(name, user.name) && Objects.equals(phoneNumber, user.phoneNumber);
+        return id == user.id && Objects.equals(name, user.name) && Objects.equals(phoneNumber, user.phoneNumber);
     }
 
     @Override
@@ -75,17 +74,15 @@ public class User implements Cursoring {
 
     @Override
     public String getInfo() {
-        return "\n=== Меню \"Выбранный пользователь\" ===";
+        return "\n=== Меню \"Выбранный пользователь\" ===\nИнформация о пользователе:"
+                + String.format("userId = %s, name = %s, phone = %s%n", this.id, this.name, this.phoneNumber);
     }
 
     @Override
     public String getCommands() {
         init();
-        System.out.println("Информация о пользователе:");
-        display.write(MainMenu.getInstance().getUserService().getInfo(this.id));
-        System.out.println("Закрепленная техника:");
-        display.write(MainMenu.getInstance().getUserService().getUserEquipments(this.id));
-        System.out.println();
+        DisplayReadWriter.write(List.of("Закрепленная техника:"));
+        DisplayReadWriter.write(userService.getUserEquipments(this.id));
         return """
                 Доступные команды:
                 1 - Закрепить технику
@@ -103,47 +100,68 @@ public class User implements Cursoring {
         switch (commandNumber) {
             //Закрепить технику
             case "1" -> {
-                display.write(userService.getFreeEquipments());
-                String equipmentId = display.writeAndRead(List.of("Введите id техники:"));
-                userService.assignEquipment(this.id, Integer.parseInt(equipmentId));
-                display.write(List.of("Техника закреплена!"));
+                DisplayReadWriter.write(userService.getFreeEquipments());
+                String equipmentId = DisplayReadWriter.writeAndRead(List.of("Введите id техники:"));
+
+                if (userService.assignEquipment(this.id, Integer.parseInt(equipmentId)).equalsIgnoreCase("200 OK")) {
+                    DisplayReadWriter.write(List.of("Техника закреплена!"));
+                } else {
+                    DisplayReadWriter.write(List.of("Ошибка при закреплении техники!"));
+                }
             }
             //Открепить технику
             case "2" -> {
-                display.write(userService.getUserEquipments(this.id));
-                String equipmentId = display.writeAndRead(List.of("Введите id техники:"));
-                userService.detachEquipment(Integer.parseInt(equipmentId));
-                display.write(List.of("Техника откреплена!"));
+                DisplayReadWriter.write(userService.getUserEquipments(this.id));
+                String equipmentId = DisplayReadWriter.writeAndRead(List.of("Введите id техники:"));
+
+                if (userService.detachEquipment(Integer.parseInt(equipmentId)).equalsIgnoreCase("200 OK")) {
+                    DisplayReadWriter.write(List.of("Техника откреплена!"));
+                } else {
+                    DisplayReadWriter.write(List.of("Ошибка при откреплении техники!"));
+                }
             }
             //Изменить пользователя
             case "3" -> {
-                String choice = display.writeAndRead(List.of("Что хотите скорректировать?\n1 - Имя\n2 - Телефон"));
+                String choice = DisplayReadWriter.writeAndRead(List.of("Что хотите скорректировать?\n1 - Имя\n2 - Телефон"));
                 switch (choice) {
                     case "1" -> {
-                        String name = display.writeAndRead(List.of("Введите корректное имя пользователя:"));
+                        String name = DisplayReadWriter.writeAndRead(List.of("Введите корректное имя пользователя:"));
                         if (name.isEmpty()) {
-                            display.write(List.of("Недопустимо пустое имя!"));
+                            DisplayReadWriter.write(List.of("Недопустимо пустое имя!"));
                             return "";
                         }
-                        userService.updateName(this.id, name);
-                        display.write(List.of("Имя обновлено!"));
+
+                        if (userService.updateName(this.id, name).equalsIgnoreCase("200 OK")) {
+                            DisplayReadWriter.write(List.of("Имя обновлено!"));
+                        } else {
+                            DisplayReadWriter.write(List.of("Ошибка при обновлении имени!"));
+                        }
                     }
                     case "2" -> {
-                        String phone = display.writeAndRead(List.of("Введите корректный телефон пользователя:"));
+                        String phone = DisplayReadWriter.writeAndRead(List.of("Введите корректный телефон пользователя:"));
                         if (phone.isEmpty()) {
-                            display.write(List.of("Недопустим пустой телефон!"));
+                            DisplayReadWriter.write(List.of("Недопустим пустой телефон!"));
                             return "";
                         }
-                        userService.updatePhone(this.id, phone);
-                        display.write(List.of("Телефон обновлен!"));
+
+                        if (userService.updatePhone(this.id, phone).equalsIgnoreCase("200 OK")) {
+                            DisplayReadWriter.write(List.of("Телефон обновлен!"));
+                        } else {
+                            DisplayReadWriter.write(List.of("Ошибка при обновлении телефонв!"));
+                        }
                     }
-                    default -> display.write(List.of("Команды не существует. Попробуйте еще раз!"));
+                    default -> DisplayReadWriter.write(List.of("Команды не существует. Попробуйте еще раз!"));
                 }
             }
             //Удалить пользователя
             case "4" -> {
-                display.write(List.of("Удаляю текущего пользователя...", "Проверяю есть ли закрепленная техника..."));
-                display.write(userService.deleteByUserId(this.id));
+                DisplayReadWriter.write(List.of("Удаляю текущего пользователя...", "Проверяю есть ли закрепленная техника..."));
+
+                if (userService.deleteByUserId(this.id).equalsIgnoreCase("200 OK")) {
+                    DisplayReadWriter.write(List.of("Закрепленная техника отсутствует!", "Пользователь удален", "Перехожу в главное меню"));
+                } else {
+                    DisplayReadWriter.write(List.of("Удалить нельзя. За пользователем закреплена техника!"));
+                }
             }
             //Выход в главное меню
             case "9" -> {
@@ -153,7 +171,7 @@ public class User implements Cursoring {
             case "0" -> {
                 return "EXIT";
             }
-            default -> display.write(List.of("Команды не существует. Попробуйте еще раз!"));
+            default -> DisplayReadWriter.write(List.of("Команды не существует. Попробуйте еще раз!"));
         }
         return "";
     }

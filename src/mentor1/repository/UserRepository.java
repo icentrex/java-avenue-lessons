@@ -6,27 +6,26 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class UserRepository {
-    private final Map<String, User> users = new HashMap<>();
+    private final Map<Integer, User> users = new HashMap<>();
+    private int nextId = 1;
 
     public UserRepository() {
-        User user = new User("Дмитрий", "123-45-66");
-        users.put(user.getId(), user);
-        User user1 = new User("Иван", "999-45-66");
-        users.put(user1.getId(), user1);
-        User user2 = new User("Ирина", "888-45-66");
-        users.put(user2.getId(), user2);
+        add(new User("Дмитрий", "123-45-66"));
+//        add(new User("Иван", "999-45-66"));
+//        add(new User("Ирина", "888-45-66"));
     }
 
-    public User add(User user) {
-        users.put(user.getId(), user);
-        return user;
+    public void add(User user) {
+        user.setId(nextId);
+        users.put(nextId, user);
+        nextId++;
     }
 
-    public void deleteById(String userId) {
+    public void deleteById(int userId) {
         users.remove(userId);
     }
 
-    public void updateName(String userId, String name) {
+    public void updateName(int userId, String name) {
         User user = findById(userId);
 
         if (user != null) {
@@ -34,7 +33,7 @@ public class UserRepository {
         }
     }
 
-    public void updatePhone(String userId, String phone) {
+    public void updatePhone(int userId, String phone) {
         User user = findById(userId);
 
         if (user != null) {
@@ -42,7 +41,7 @@ public class UserRepository {
         }
     }
 
-    public User findById(String userId) {
+    public User findById(int userId) {
         return users.get(userId);
     }
 
@@ -51,14 +50,9 @@ public class UserRepository {
                 .anyMatch(user -> user.getPhoneNumber().equalsIgnoreCase(phone));
     }
 
-    public boolean isNameExist(String name) {
-        return users.values().stream()
-                .anyMatch(user -> user.getName().equalsIgnoreCase(name));
-    }
-
     public List<User> getUsersList() {
         return users.values().stream()
-                .sorted(Comparator.comparing(user -> user.getId()))
+                .sorted(Comparator.comparing(User::getId))
                 .collect(Collectors.toList());
     }
 }
