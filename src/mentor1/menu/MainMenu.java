@@ -1,19 +1,52 @@
 package mentor1.menu;
 
 import mentor1.Cursoring;
+import mentor1.repository.EquipmentRepository;
+import mentor1.repository.UserRepository;
+import mentor1.service.EquipmentService;
+import mentor1.service.UserService;
 
-public class ConsoleMainMenu implements Cursoring {
-    //Вывод доступных команд
-    //Считывание выбора пользователя
-    //Вывод информации
-    private final UserMenu userMenu; // переделать Сервисы под Синглтоны?
+public class MainMenu implements Cursoring {
+    private static MainMenu instance;
+    private final UserMenu userMenu;
     private final EquipmentMenu equipmentMenu;
+    private final UserService userService;
+    private final EquipmentService equipmentService;
+    private final ConsoleDisplay display = new ConsoleDisplay();
     private Cursoring cursorObject;
     private boolean isNeedContinue = true;
 
-    public ConsoleMainMenu(UserMenu userMenu, EquipmentMenu equipmentMenu) {
-        this.userMenu = userMenu;
-        this.equipmentMenu = equipmentMenu;
+    private MainMenu() {
+        UserRepository userRepository = new UserRepository();
+        EquipmentRepository equipmentRepository = new EquipmentRepository();
+
+        this.userService = new UserService(userRepository);
+        this.equipmentService = new EquipmentService(equipmentRepository);
+
+        userService.setEquipmentService(equipmentService);
+        equipmentService.setUserService(userService);
+
+        this.userMenu = new UserMenu(userService);
+        this.equipmentMenu = new EquipmentMenu(equipmentService);
+    }
+
+    public UserService getUserService() {
+        return userService;
+    }
+
+    public EquipmentService getEquipmentService() {
+        return equipmentService;
+    }
+
+    public ConsoleDisplay getDisplay() {
+        return display;
+    }
+
+    public static MainMenu getInstance() {
+        if (instance == null) {
+            instance = new MainMenu();
+        }
+        return instance;
     }
 
     public void run() {
@@ -23,6 +56,10 @@ public class ConsoleMainMenu implements Cursoring {
             String input = ConsoleScanner.IN.nextLine();
             System.out.println(this.execute(input));
         }
+    }
+
+    public void setCursorObject(Cursoring cursorObject) {
+        this.cursorObject = cursorObject;
     }
 
     @Override
@@ -49,10 +86,14 @@ public class ConsoleMainMenu implements Cursoring {
         if (cursorObject != null) {
             String result = this.cursorObject.execute(commandNumber);
 
-            if (result.equalsIgnoreCase("BACK")) {
+            if (result.isEmpty()) {
+                return "";
+            }
+
+            if (result.equals("BACK")) {
                 this.cursorObject = null;
                 return "";
-            } else if (result.equalsIgnoreCase("EXIT")) {
+            } else if (result.equals("EXIT")) {
                 this.isNeedContinue = false;
                 return "Программа завершена!";
             }
