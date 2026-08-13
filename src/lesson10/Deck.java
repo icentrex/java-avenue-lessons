@@ -7,6 +7,7 @@ import java.util.Random;
 public class Deck {
 
     private final ArrayList<Card> cards = new ArrayList<>();
+    Random random = new Random();
 
     public void refreshDeck() {
         cards.clear();
@@ -74,8 +75,6 @@ public class Deck {
         cards.add(new Card(11, "Туз бубей"));
         cards.add(new Card(11, "Туз пик"));
         cards.add(new Card(11, "Туз червей"));
-
-
     }
 
     public void shuffleDeck() {
@@ -83,6 +82,7 @@ public class Deck {
     }
 
     public Card getRandomCard() {
-        return cards.get(new Random().nextInt(cards.size()));
+        int randomIndex = random.nextInt(0, cards.size());
+        return cards.remove(randomIndex);
     }
 }

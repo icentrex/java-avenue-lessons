@@ -1,5 +1,7 @@
 package lesson10;
 
+import java.util.Objects;
+
 public record Card(int nominal, String suit) {
 
     @Override
@@ -9,6 +11,4 @@ public record Card(int nominal, String suit) {
                 ", suit='" + suit + '\'' +
                 '}';
     }
-
-
 }

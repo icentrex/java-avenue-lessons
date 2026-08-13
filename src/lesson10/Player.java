@@ -2,6 +2,7 @@ package lesson10;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Scanner;
 
 public class Player {
 
@@ -19,6 +20,34 @@ public class Player {
      */
     public void addCardToHand(Card card) {
         hand.add(card);
+    }
+
+    public boolean isNeedNextCard() {
+        int points = countPoints();
+        if (points > 21) {
+            System.out.println("У вас " + points + " очков. Перебор. Вы проиграли.");
+            return false;
+        }
+
+        System.out.println("Карты у вас на руках: ");
+        for (Card card : hand) {
+            System.out.println(card);
+        }
+        System.out.println("Сумма очков: " + countPoints());
+
+        System.out.println("\nХотите ли вы взять еще карту (Да/Нет)?");
+        Scanner scanner = new Scanner(System.in);
+        String input = scanner.nextLine();
+        scanner.close();
+        return input.equalsIgnoreCase("Да");
+    }
+
+    public int countPoints() {
+        int points = 0;
+        for (Card card : hand) {
+            points += card.nominal();
+        }
+        return points;
     }
 
     public String getName() {
