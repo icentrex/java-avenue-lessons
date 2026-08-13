@@ -5,13 +5,13 @@ import lesson12.hw.interfaces.Swimable;
 
 public class PlushDuck extends Duck implements Swimable, Quackable {
 
-    public PlushDuck(String name, int age, int weight) {
-        super(name, age, weight);
+    public PlushDuck(String name, int age, double weight, Color color) {
+        super(name, age, weight, color);
     }
 
     @Override
     public void quack() {
-        System.out.println("Крякаю, когда нажали на кнопку");
+        System.out.println("Крякать, когда нажали на кнопку");
     }
 
     @Override
