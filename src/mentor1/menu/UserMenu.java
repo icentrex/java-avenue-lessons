@@ -4,13 +4,29 @@ import mentor1.model.User;
 import mentor1.service.UserService;
 
 import java.util.List;
+import java.util.Optional;
 
 public class UserMenu implements Cursoring, DisplayReadWriter {
     private final UserService userService;
 
-
     public UserMenu(UserService userService) {
         this.userService = userService;
+    }
+
+    private void showUsersList() {
+        List<User> usersList = userService.getUsersList();
+        if (usersList.isEmpty()) {
+            DisplayReadWriter.write(List.of("Список пользователей пуст"));
+            return;
+        }
+
+        List<String> formatted = usersList.stream()
+                .map(user -> String.format("userId = %s, name = %s, phone = %s%n",
+                        user.getId(),
+                        user.getName(),
+                        user.getPhone()))
+                .toList();
+        DisplayReadWriter.write(formatted);
     }
 
     public UserService getUserService() {
@@ -24,7 +40,7 @@ public class UserMenu implements Cursoring, DisplayReadWriter {
 
     @Override
     public String getCommands() {
-        DisplayReadWriter.write(userService.getUsersList());
+        showUsersList();
         return """
                 Доступные команды:
                 1 - Создать пользователя
@@ -41,19 +57,25 @@ public class UserMenu implements Cursoring, DisplayReadWriter {
             case "1" -> {
                 String name = DisplayReadWriter.writeAndRead(List.of("Введите имя пользователя:"));
                 String phone = DisplayReadWriter.writeAndRead(List.of("Введите телефон пользователя:"));
-                User user = userService.create(name, phone);
-                if (user == null) {
+                Optional<User> createUserResult = userService.createUser(name, phone);
+                if (createUserResult.isEmpty()) {
                     DisplayReadWriter.write(List.of("Пользователь с таким именем и телефоном уже существует!"));
                     return "";
                 }
-                MainMenu.getInstance().setCursorObject(user);
-                DisplayReadWriter.write(List.of("Пользователь создан!", "Пользователь выбран!"));
+                MainMenu.getInstance().setCursorObject(createUserResult.get());
+                DisplayReadWriter.write(List.of("Пользователь создан и выбран!"));
             }
             //Выбрать
             case "2" -> {
-                DisplayReadWriter.write(userService.getUsersList());
+                showUsersList();
                 String userId = DisplayReadWriter.writeAndRead(List.of("Введите id пользователя:"));
-                MainMenu.getInstance().setCursorObject(userService.findByUserId(Integer.parseInt(userId)));
+                Optional<User> findUserResult = userService.findUserById(Integer.parseInt(userId));
+
+                if (findUserResult.isEmpty()) {
+                    DisplayReadWriter.write(List.of("Пользователя с таким ID не существует"));
+                    return "";
+                }
+                MainMenu.getInstance().setCursorObject(findUserResult.get());
             }
             //Выход в главное меню
             case "9" -> {

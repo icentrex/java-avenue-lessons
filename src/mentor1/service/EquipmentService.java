@@ -5,6 +5,7 @@ import mentor1.model.*;
 import mentor1.repository.EquipmentRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public class EquipmentService implements DisplayReadWriter {
     private final EquipmentRepository equipmentRepository;
@@ -96,13 +97,14 @@ public class EquipmentService implements DisplayReadWriter {
             return;
         }
 
-        User user = userService.findByUserId(assignedUserId);
-        if (user == null) {
-            System.out.println("Такого пользователя не существует");
+        Optional<User> findUserResult = userService.findUserById(assignedUserId);
+        if (findUserResult.isEmpty()) {
+            DisplayReadWriter.write(List.of("Такого пользователя не существует"));
             return;
         }
 
-        System.out.printf("userId = %s, name = %s, phone = %s%n", user.getId(), user.getName(), user.getPhoneNumber());
+        User user = findUserResult.get();
+        System.out.printf("userId = %s, name = %s, phone = %s%n", user.getId(), user.getName(), user.getPhone());
     }
 
     //метод для UserMenu
@@ -116,12 +118,12 @@ public class EquipmentService implements DisplayReadWriter {
         return freeEquipments;
     }
 
-    public void assignEquipment(int userId, int equipmentId) {
-        equipmentRepository.assignEquipment(userId, equipmentId);
+    public boolean assignEquipment(int userId, int equipmentId) {
+        return equipmentRepository.assignEquipment(userId, equipmentId);
     }
 
-    public void detachEquipment(int equipmentId) {
-        equipmentRepository.detachEquipment(equipmentId);
+    public boolean detachEquipment(int equipmentId) {
+        return equipmentRepository.detachEquipment(equipmentId);
     }
 
     public void showUsersList() {

@@ -76,20 +76,24 @@ public class EquipmentRepository {
                 .collect(Collectors.toList());
     }
 
-    public void assignEquipment(int userId, int equipmentId) {
+    public boolean assignEquipment(int userId, int equipmentId) {
         Equipment equipment = equipments.get(equipmentId);
 
         if (equipment != null) {
             equipment.setUserId(userId);
+            return true;
         }
+        return false;
     }
 
-    public void detachEquipment(int equipmentId) {
+    public boolean detachEquipment(int equipmentId) {
         Equipment equipment = equipments.get(equipmentId);
 
         if (equipment != null) {
             equipment.setUserId(0);
+            return true;
         }
+        return false;
     }
 
     public int getAssignedUserByEquipmentId(int equipmentId) {

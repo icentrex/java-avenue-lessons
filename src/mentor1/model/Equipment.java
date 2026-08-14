@@ -14,10 +14,9 @@ public abstract class Equipment implements Cursoring, DisplayReadWriter {
     private String brandName;
     private int serialNumber;
     private int userId;
-    //так норм делать или лучше метод инит оставить?
-    private EquipmentService equipmentService = MainMenu.getInstance().getEquipmentService();
-
+    private EquipmentService equipmentService;
     //private User currentUser;
+
     public Equipment(String brandName, int serialNumber) {
         this.brandName = brandName;
         this.serialNumber = serialNumber;
@@ -25,10 +24,10 @@ public abstract class Equipment implements Cursoring, DisplayReadWriter {
         //currentUser = null;
     }
 
-//    public void init() {
-//        MainMenu menu = MainMenu.getInstance();
-//        equipmentService = menu.getEquipmentService();
-//    }
+    public void init() {
+        MainMenu menu = MainMenu.getInstance();
+        equipmentService = menu.getEquipmentService();
+    }
 
     public String getBrandName() {
         return this.brandName;
@@ -97,7 +96,7 @@ public abstract class Equipment implements Cursoring, DisplayReadWriter {
 
     @Override
     public String getCommands() {
-        //        init();
+        init();
         DisplayReadWriter.write(List.of("Закреплена за пользователем:"));
         equipmentService.showAssignedUserByEquipmentId(this.id);
         // Систем аут брать из currentUser данного класса
@@ -114,7 +113,7 @@ public abstract class Equipment implements Cursoring, DisplayReadWriter {
 
     @Override
     public String execute(String commandNumber) {
-        //        init();
+        init();
         switch (commandNumber) {
             //Закрепить технику
             case "1" -> {

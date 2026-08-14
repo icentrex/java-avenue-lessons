@@ -10,44 +10,56 @@ public class UserRepository {
     private int nextId = 1;
 
     public UserRepository() {
-        add(new User("Дмитрий", "123-45-66"));
-//        add(new User("Иван", "999-45-66"));
-//        add(new User("Ирина", "888-45-66"));
+        addUser(new User("Дмитрий", "123-45-66"));
+        addUser(new User("Иван", "999-45-66"));
+        addUser(new User("Ирина", "888-45-66"));
     }
 
-    public void add(User user) {
+    public User addUser(User user) {
         user.setId(nextId);
         users.put(nextId, user);
         nextId++;
+        return user;
     }
 
-    public void deleteById(int userId) {
-        users.remove(userId);
+    public boolean deleteUserById(int userId) {
+        return users.remove(userId) != null;
     }
 
-    public void updateName(int userId, String name) {
-        User user = findById(userId);
+    public boolean updateUserName(int userId, String name) {
+        Optional<User> findUserResult = findUserById(userId);
 
-        if (user != null) {
-            user.setName(name);
+        if (findUserResult.isEmpty()) {
+            return false;
         }
+
+        findUserResult.get().setName(name);
+        return true;
     }
 
-    public void updatePhone(int userId, String phone) {
-        User user = findById(userId);
+    public boolean updateUserPhone(int userId, String phone) {
+        Optional<User> findUserResult = findUserById(userId);
 
-        if (user != null) {
-            user.setPhoneNumber(phone);
+        if (findUserResult.isEmpty()) {
+            return false;
         }
+
+        findUserResult.get().setPhone(phone);
+        return true;
     }
 
-    public User findById(int userId) {
-        return users.get(userId);
+    public Optional<User> findUserById(int userId) {
+        return Optional.ofNullable(users.get(userId));
+    }
+
+    public boolean isPhoneExist(int excludedUserId, String phone) {
+        return users.values().stream()
+                .anyMatch(user -> user.getId() != excludedUserId && user.getPhone().equalsIgnoreCase(phone));
     }
 
     public boolean isPhoneExist(String phone) {
         return users.values().stream()
-                .anyMatch(user -> user.getPhoneNumber().equalsIgnoreCase(phone));
+                .anyMatch(user -> user.getPhone().equalsIgnoreCase(phone));
     }
 
     public List<User> getUsersList() {

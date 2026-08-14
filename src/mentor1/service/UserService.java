@@ -1,11 +1,11 @@
 package mentor1.service;
 
-import mentor1.menu.MainMenu;
 import mentor1.model.Equipment;
 import mentor1.model.User;
 import mentor1.repository.UserRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public class UserService {
     private final UserRepository userRepository;
@@ -19,100 +19,56 @@ public class UserService {
         this.equipmentService = equipmentService;
     }
 
-    public User create(String name, String phone) {
+    public Optional<User> createUser(String name, String phone) {
         if (userRepository.isPhoneExist(phone)) {
-            return null;
+            return Optional.empty();
         }
+
         User user = new User(name, phone);
-        userRepository.add(user);
-        return user;
+        return Optional.of(userRepository.addUser(user));
     }
 
-    public String deleteByUserId(int userId) {
+    public boolean deleteUserById(int userId) {
         List<Equipment> userEquipments = equipmentService.getUserEquipments(userId);
 
         if (userEquipments.isEmpty()) {
-            userRepository.deleteById(userId);
-            MainMenu.getInstance().setCursorObject(null);
-            return "200 OK";
+            return userRepository.deleteUserById(userId);
         }
-        //уточнить код HTTP
-        return "300";
+        return false;
     }
 
-    public String updateName(int userId, String name) {
-        userRepository.updateName(userId, name);
-        return "200 OK";
+    public boolean updateUserName(int userId, String name) {
+        return userRepository.updateUserName(userId, name);
     }
 
-    public String updatePhone(int userId, String phone) {
-        if (userRepository.isPhoneExist(phone)) {
-            System.out.println("Пользователь с таким номером телефона уже существует!");
-            //уточнить код HTTP
-            return "300";
+    public boolean updateUserPhone(int userId, String phone) {
+        if (userRepository.isPhoneExist(userId, phone)) {
+            return false;
         }
-        userRepository.updatePhone(userId, phone);
-        return "200 OK";
+        return userRepository.updateUserPhone(userId, phone);
     }
 
-    public User findByUserId(int userId) {
-        return userRepository.findById(userId);
+    public Optional<User> findUserById(int userId) {
+        return userRepository.findUserById(userId);
     }
 
-    public String assignEquipment(int userId, int equipmentId) {
-        equipmentService.assignEquipment(userId, equipmentId);
-        return "200 OK";
+    public boolean assignEquipment(int userId, int equipmentId) {
+        return equipmentService.assignEquipment(userId, equipmentId);
     }
 
-    public String detachEquipment(int equipmentId) {
-        equipmentService.detachEquipment(equipmentId);
-        return "200 OK";
+    public boolean detachEquipment(int equipmentId) {
+        return equipmentService.detachEquipment(equipmentId);
     }
 
-    public List<String> getUsersList() {
-        List<User> userList = userRepository.getUsersList();
-
-        if (userList.isEmpty()) {
-            return List.of("Список пользователей пуст");
-        }
-
-        return userList.stream()
-                .map(e -> String.format("userId = %s, name = %s, phone = %s%n",
-                        e.getId(),
-                        e.getName(),
-                        e.getPhoneNumber()))
-                .toList();
+    public List<User> getUsersList() {
+        return userRepository.getUsersList();
     }
 
-    public List<String> getFreeEquipments() {
-        List<Equipment> freeEquipments = equipmentService.getFreeEquipments();
-
-        if (freeEquipments.isEmpty()) {
-            return List.of("Нет свободной техники");
-        }
-
-        return freeEquipments.stream()
-                .map(e -> String.format("id = %d, name = %s, serialNumber = %d, userId = %s%n",
-                        e.getId(),
-                        e.getBrandName(),
-                        e.getSerialNumber(),
-                        e.getUserId()))
-                .toList();
+    public List<Equipment> getFreeEquipments() {
+        return equipmentService.getFreeEquipments();
     }
 
-    public List<String> getUserEquipments(int userId) {
-        List<Equipment> userEquipments = equipmentService.getUserEquipments(userId);
-
-        if (userEquipments.isEmpty()) {
-            return List.of("У пользователя нет техники");
-        }
-
-        return userEquipments.stream()
-                .map(e -> String.format("id = %d, name = %s, serialNumber = %d, userId = %s%n",
-                        e.getId(),
-                        e.getBrandName(),
-                        e.getSerialNumber(),
-                        e.getUserId()))
-                .toList();
+    public List<Equipment> getUserEquipments(int userId) {
+        return equipmentService.getUserEquipments(userId);
     }
 }
