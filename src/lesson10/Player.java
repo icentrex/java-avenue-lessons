@@ -23,22 +23,22 @@ public class Player {
     }
 
     public boolean isNeedNextCard() {
-        int points = countPoints();
-        if (points > 21) {
-            System.out.println("У вас " + points + " очков. Перебор. Вы проиграли.");
-            return false;
-        }
-
-        System.out.println("Карты у вас на руках: ");
+        System.out.println("Карты на руках: ");
         for (Card card : hand) {
             System.out.println(card);
         }
-        System.out.println("Сумма очков: " + countPoints());
+        System.out.println("Сумма очков: " + countPoints() + "\n");
 
-        System.out.println("\nХотите ли вы взять еще карту (Да/Нет)?");
+        int points = countPoints();
+        if (points > 21) {
+            System.out.println("У вас перебор. Вы проиграли.");
+            return false;
+        }
+
+        System.out.println("Хотите ли вы взять еще карту (Да/Нет)?");
         Scanner scanner = new Scanner(System.in);
         String input = scanner.nextLine();
-        scanner.close();
+        //scanner.close();
         return input.equalsIgnoreCase("Да");
     }
 

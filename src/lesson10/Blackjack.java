@@ -29,7 +29,9 @@ public class Blackjack {
             Player player = new Player(playerName);
             players.add(player);
         }
-        scanner.close();
+        //scanner.close();
+        System.out.println("\nТасую колоду...");
+        System.out.println("Раздаю по две карты...\n");
 
         //2 Раздать по две карты
         deck.refreshDeck();
@@ -44,17 +46,23 @@ public class Blackjack {
 
         //3 Раздать остальные карты (пока игроки берут)
         for (Player player : players) {
+            System.out.println(player);
             while (player.isNeedNextCard()) {
+                System.out.println("Получаю еще одну карту..");
                 Card card = deck.getRandomCard();
                 player.addCardToHand(card);
             }
         }
 
         //4 Печать результатов в консоль
+        System.out.println("\n=== Подсчет результатов ===");
+        for (Player player : players) {
+            System.out.println(player);
+            System.out.println("Сумма очков: " + player.countPoints() + "\n");
+        }
+        //5 Определение победителя
         //может быть два победителя
         //диллер имеет приоритет если очки равны он победитель
         // если все проиграли, дилер проиграл, то диллер выиграл
-        System.out.println("Подсчет результатов игры...");
-        //5 Определение победителя
     }
 }
