@@ -113,7 +113,9 @@ public class User implements Cursoring, DisplayReadWriter {
         switch (commandNumber) {
             //Закрепить технику
             case "1" -> {
-                List<Equipment> freeEquipments = userService.getFreeEquipments();
+                List<Equipment> freeEquipments = MainMenu
+                        .getInstance()
+                        .getEquipmentService().getFreeEquipments();
                 if (freeEquipments.isEmpty()) {
                     DisplayReadWriter.write(List.of("Нет свободной техники"));
                     return "";

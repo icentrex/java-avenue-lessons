@@ -59,7 +59,7 @@ public class UserMenu implements Cursoring, DisplayReadWriter {
                 String phone = DisplayReadWriter.writeAndRead(List.of("Введите телефон пользователя:"));
                 Optional<User> createUserResult = userService.createUser(name, phone);
                 if (createUserResult.isEmpty()) {
-                    DisplayReadWriter.write(List.of("Пользователь с таким именем и телефоном уже существует!"));
+                    DisplayReadWriter.write(List.of("Пользователь с таким телефоном уже существует!"));
                     return "";
                 }
                 MainMenu.getInstance().setCursorObject(createUserResult.get());
