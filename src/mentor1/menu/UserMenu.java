@@ -6,7 +6,7 @@ import mentor1.service.UserService;
 import java.util.List;
 import java.util.Optional;
 
-public class UserMenu implements Cursoring, DisplayReadWriter {
+public class UserMenu implements Cursoring {
     private final UserService userService;
 
     public UserMenu(UserService userService) {
@@ -16,7 +16,7 @@ public class UserMenu implements Cursoring, DisplayReadWriter {
     private void showUsersList() {
         List<User> usersList = userService.getUsersList();
         if (usersList.isEmpty()) {
-            DisplayReadWriter.write(List.of("Список пользователей пуст"));
+            DisplayReadWriterImpl.write(List.of("Список пользователей пуст"));
             return;
         }
 
@@ -55,7 +55,7 @@ public class UserMenu implements Cursoring, DisplayReadWriter {
         switch (commandNumber) {
             //Создать
             case "1" -> {
-                String name = DisplayReadWriter.writeAndRead(List.of("Введите имя пользователя:"));
+                String name = DisplayReadWriterImpl.writeAndRead(List.of("Введите имя пользователя:"));
                 String phone = DisplayReadWriter.writeAndRead(List.of("Введите телефон пользователя:"));
                 Optional<User> createUserResult = userService.createUser(name, phone);
                 if (createUserResult.isEmpty()) {

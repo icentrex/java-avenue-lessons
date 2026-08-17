@@ -7,7 +7,7 @@ import mentor1.service.UserService;
 
 import java.util.List;
 
-public class MainMenu implements Cursoring, DisplayReadWriter {
+public class MainMenu implements Cursoring {
     private static MainMenu instance;
     private final UserMenu userMenu;
     private final EquipmentMenu equipmentMenu;
@@ -47,10 +47,10 @@ public class MainMenu implements Cursoring, DisplayReadWriter {
 
     public void run() {
         while (isNeedContinue) {
-            DisplayReadWriter.write(List.of(this.getInfo()));
-            DisplayReadWriter.write(List.of(this.getCommands()));
-            String input = DisplayReadWriter.read();
-            DisplayReadWriter.write(List.of(this.execute(input)));
+            DisplayReadWriterImpl.write(List.of(this.getInfo()));
+            DisplayReadWriterImpl.write(List.of(this.getCommands()));
+            String input = DisplayReadWriterImpl.write(List.of("Введите команду (1, 2...)"));
+            DisplayReadWriterImpl.write(List.of(this.execute(input)));
         }
     }
 
