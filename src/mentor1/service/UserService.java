@@ -1,5 +1,7 @@
 package mentor1.service;
 
+import mentor1.TechnicalException;
+import mentor1.menu.MainMenu;
 import mentor1.model.Equipment;
 import mentor1.model.User;
 import mentor1.repository.UserRepository;
@@ -9,14 +11,9 @@ import java.util.Optional;
 
 public class UserService {
     private final UserRepository userRepository;
-    private EquipmentService equipmentService;
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-    }
-
-    public void setEquipmentService(EquipmentService equipmentService) {
-        this.equipmentService = equipmentService;
     }
 
     public Optional<User> createUser(String name, String phone) {
@@ -25,11 +22,21 @@ public class UserService {
         }
 
         User user = new User(name, phone);
-        return Optional.of(userRepository.addUser(user));
+        try {
+            User createdUser = userRepository.addUser(user);
+            if (createdUser == null) {
+                throw new TechnicalException("Репозиторий вернул ошибку при сохранении пользователя", null);
+            }
+            return Optional.of(createdUser);
+        } catch (TechnicalException e) {
+            throw e;
+        } catch (RuntimeException e) {
+            throw new TechnicalException("Техническая ошибка при создании пользователя", e);
+        }
     }
 
     public boolean deleteUserById(int userId) {
-        List<Equipment> userEquipments = equipmentService.getUserEquipments(userId);
+        List<Equipment> userEquipments = MainMenu.getInstance().getEquipmentService().getUserEquipments(userId);
 
         if (userEquipments.isEmpty()) {
             return userRepository.deleteUserById(userId);
@@ -52,23 +59,7 @@ public class UserService {
         return userRepository.findUserById(userId);
     }
 
-    public boolean assignEquipment(int userId, int equipmentId) {
-        return equipmentService.assignEquipment(userId, equipmentId);
-    }
-
-    public boolean detachEquipment(int equipmentId) {
-        return equipmentService.detachEquipment(equipmentId);
-    }
-
     public List<User> getUsersList() {
         return userRepository.getUsersList();
-    }
-
-    public List<Equipment> getFreeEquipments() {
-        return equipmentService.getFreeEquipments();
-    }
-
-    public List<Equipment> getUserEquipments(int userId) {
-        return equipmentService.getUserEquipments(userId);
     }
 }

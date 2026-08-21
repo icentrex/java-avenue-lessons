@@ -15,33 +15,30 @@ public class EquipmentRepository {
         add(new Computer("Dell", 3));
     }
 
-    public Map<Integer, Equipment> getEquipments() {
-        return equipments;
-    }
-
-    public void add(Equipment equipment) {
+    public Equipment add(Equipment equipment) {
         equipment.setId(nextId);
         equipments.put(nextId, equipment);
         nextId++;
+        return equipment;
     }
 
-    public void deleteById(int equipmentId) {
-        equipments.remove(equipmentId);
+    public boolean deleteEquipmentById(int equipmentId) {
+        return equipments.remove(equipmentId) != null;
     }
 
-    public Equipment findById(int equipmentId) {
-        return equipments.get(equipmentId);
+    public Optional<Equipment> findEquipmentById(int equipmentId) {
+        return Optional.ofNullable(equipments.get(equipmentId));
     }
 
     public void updateBrandName(int equipmentId, String brandName) {
-        Equipment equipment = findById(equipmentId);
+        Equipment equipment = findEquipmentById(equipmentId);
         if (equipment != null) {
             equipment.setBrandName(brandName);
         }
     }
 
     public void updateSerialNumber(int equipmentId, int serialNumber) {
-        Equipment equipment = findById(equipmentId);
+        Equipment equipment = findEquipmentById(equipmentId);
         if (equipment != null) {
             equipment.setSerialNumber(serialNumber);
         }
@@ -52,11 +49,7 @@ public class EquipmentRepository {
                 .anyMatch(equipment -> (equipment.getSerialNumber() == serialNumber));
     }
 
-    public Equipment getEquipmentInfo(int equipmentId) {
-        return equipments.get(equipmentId);
-    }
-
-    public List<Equipment> getAllEquipments() {
+    public List<Equipment> getEquipmentsList() {
         return equipments.values().stream()
                 .sorted(Comparator.comparing(Equipment::getId))
                 .collect(Collectors.toList());

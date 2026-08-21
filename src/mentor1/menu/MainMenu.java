@@ -15,19 +15,23 @@ public class MainMenu implements Cursoring {
     private final EquipmentService equipmentService;
     private Cursoring cursorObject;
     private boolean isNeedContinue = true;
+    private DisplayReadWriterImpl displayReadWriter;
 
     private MainMenu() {
+        displayReadWriter = new DisplayReadWriterImpl();
+
         UserRepository userRepository = new UserRepository();
         EquipmentRepository equipmentRepository = new EquipmentRepository();
 
         this.userService = new UserService(userRepository);
         this.equipmentService = new EquipmentService(equipmentRepository);
 
-        userService.setEquipmentService(equipmentService);
-        equipmentService.setUserService(userService);
-
         this.userMenu = new UserMenu(userService);
         this.equipmentMenu = new EquipmentMenu(equipmentService);
+    }
+
+    public DisplayReadWriter getDisplayReadWriter() {
+        return displayReadWriter;
     }
 
     public UserService getUserService() {
@@ -47,10 +51,10 @@ public class MainMenu implements Cursoring {
 
     public void run() {
         while (isNeedContinue) {
-            DisplayReadWriterImpl.write(List.of(this.getInfo()));
-            DisplayReadWriterImpl.write(List.of(this.getCommands()));
-            String input = DisplayReadWriterImpl.write(List.of("Введите команду (1, 2...)"));
-            DisplayReadWriterImpl.write(List.of(this.execute(input)));
+            displayReadWriter.write(List.of(this.getInfo()));
+            displayReadWriter.write(List.of(this.getCommands()));
+            String input = displayReadWriter.writeAndRead(List.of("Введите команду (1, 2...)"));
+            displayReadWriter.write(List.of(this.execute(input)));
         }
     }
 

@@ -1,16 +1,36 @@
 package mentor1.menu;
 
+import mentor1.TechnicalException;
 import mentor1.model.Equipment;
 import mentor1.service.EquipmentService;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
-public final class EquipmentMenu implements Cursoring, DisplayReadWriter {
+public final class EquipmentMenu implements Cursoring {
     private final EquipmentService equipmentService;
 
     public EquipmentMenu(EquipmentService equipmentService) {
         this.equipmentService = equipmentService;
+    }
+
+    public void showEquipmentsList() {
+        List<Equipment> catalog = MainMenu.getInstance().getEquipmentService().getEquipmentsList();
+
+        if (catalog.isEmpty()) {
+            MainMenu.getInstance().getDisplayReadWriter().write(List.of("Список техники пустой"));
+            return;
+        }
+
+        List<String> formatted = catalog.stream()
+                .map(equipment -> String.format("id = %d, name = %s, serialNumber = %d, userId = %s%n",
+                        equipment.getId(),
+                        equipment.getBrandName(),
+                        equipment.getSerialNumber(),
+                        equipment.getUserId()))
+                .toList();
+        MainMenu.getInstance().getDisplayReadWriter().write(formatted);
     }
 
     @Override
@@ -20,7 +40,7 @@ public final class EquipmentMenu implements Cursoring, DisplayReadWriter {
 
     @Override
     public String getCommands() {
-        equipmentService.showAllEquipments();
+        showEquipmentsList();
         return """
                 Доступные команды:
                 1 - Добавить технику
@@ -35,25 +55,48 @@ public final class EquipmentMenu implements Cursoring, DisplayReadWriter {
         switch (commandNumber) {
             //Добавить технику
             case "1" -> {
-                String type = DisplayReadWriter.writeAndRead(
-                        List.of("Введите тип оборудования:\n1 - Монитор\n2 - Мышка\n3 - Системный блок"));
-                String brandName = DisplayReadWriter.writeAndRead(List.of("Введите производителя:"));
-                String serialNumber = DisplayReadWriter.writeAndRead(List.of("Введите серийный номер:"));
+                String type = MainMenu.getInstance().getDisplayReadWriter()
+                        .writeAndRead(List.of("Введите тип оборудования:\n1 - Монитор\n2 - Мышка\n3 - Системный блок"));
+                String brandName = MainMenu.getInstance().getDisplayReadWriter()
+                        .writeAndRead(List.of("Введите производителя:"));
+                String serialNumber = MainMenu.getInstance().getDisplayReadWriter()
+                        .writeAndRead(List.of("Введите серийный номер:"));
 
-                Equipment equipment = equipmentService.create(Integer.parseInt(type), brandName, Integer.parseInt(serialNumber));
+                try {
+                    Optional<Equipment> createEquipmentResult = equipmentService.createEquipment(
+                            Integer.parseInt(type),
+                            brandName,
+                            Integer.parseInt(serialNumber));
 
-                if (equipment == null) {
-                    return "";
+                    if (createEquipmentResult.isEmpty()) {
+                        MainMenu.getInstance().getDisplayReadWriter()
+                                .write(List.of("Техника с таким серийным номером уже существует!"));
+                        return "";
+                    }
+
+                    MainMenu.getInstance().setCursorObject(createEquipmentResult.get());
+                    MainMenu.getInstance().getDisplayReadWriter()
+                            .write(List.of("Техника добавлена и выбрана!"));
+
+                } catch (TechnicalException e) {
+                    MainMenu.getInstance().getDisplayReadWriter()
+                            .write(List.of(e.getMessage()));
                 }
-
-                MainMenu.getInstance().setCursorObject(equipment);
-                DisplayReadWriter.write(List.of("Техника добавлена!", "Техника выбрана!"));
             }
             //Выбрать технику
             case "2" -> {
-                equipmentService.showAllEquipments();
-                String equipmentId = DisplayReadWriter.writeAndRead(List.of("Введите id оборудования:"));
-                MainMenu.getInstance().setCursorObject(equipmentService.findById(Integer.parseInt(equipmentId)));
+                showEquipmentsList();
+                String equipmentId = MainMenu.getInstance().getDisplayReadWriter()
+                        .writeAndRead(List.of("Введите id оборудования:"));
+
+                Optional<Equipment> findEquipmentResult = equipmentService.findEquipmentById(Integer.parseInt(equipmentId));
+
+                if (findEquipmentResult.isEmpty()) {
+                    MainMenu.getInstance().getDisplayReadWriter()
+                            .write(List.of("Техника с таким ID не существует"));
+                    return "";
+                }
+                MainMenu.getInstance().setCursorObject(findEquipmentResult.get());
             }
             case "9" -> {
                 return "BACK";
@@ -61,13 +104,10 @@ public final class EquipmentMenu implements Cursoring, DisplayReadWriter {
             case "0" -> {
                 return "EXIT";
             }
-            default -> DisplayReadWriter.write(List.of("Команды не существует. Попробуйте еще раз!"));
+            default -> MainMenu.getInstance().getDisplayReadWriter()
+                    .write(List.of("Команды не существует. Попробуйте еще раз!"));
         }
         return "";
-    }
-
-    public EquipmentService equipmentService() {
-        return equipmentService;
     }
 
     @Override
@@ -88,5 +128,4 @@ public final class EquipmentMenu implements Cursoring, DisplayReadWriter {
         return "EquipmentMenu[" +
                 "equipmentService=" + equipmentService + ']';
     }
-
 }

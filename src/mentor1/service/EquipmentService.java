@@ -1,62 +1,81 @@
 package mentor1.service;
 
-import mentor1.menu.DisplayReadWriter;
+import mentor1.TechnicalException;
+import mentor1.menu.MainMenu;
 import mentor1.model.*;
 import mentor1.repository.EquipmentRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-public class EquipmentService implements DisplayReadWriter {
+public class EquipmentService {
     private final EquipmentRepository equipmentRepository;
-    private UserService userService;
 
     public EquipmentService(EquipmentRepository equipmentRepository) {
         this.equipmentRepository = equipmentRepository;
     }
 
-    public void setUserService(UserService userService) {
-        this.userService = userService;
-    }
-
-    public Equipment create(int type, String brandName, int serialNumber) {
+    public Optional<Equipment> createEquipment(int type, String brandName, int serialNumber) {
         if (equipmentRepository.isSerialNumberExist(serialNumber)) {
-            DisplayReadWriter.write(List.of("Техника с таким серийным номером уже существует!"));
-            return null;
+            return Optional.empty();
         }
 
         switch (type) {
             case 1 -> {
                 Equipment monitor = new Monitor(brandName, serialNumber);
-                equipmentRepository.add(monitor);
-                return monitor;
+                try {
+                    Equipment createdEquipment = equipmentRepository.add(monitor);
+                    if (createdEquipment == null) {
+                        throw new TechnicalException("Репозиторий вернул ошибку при сохранении техники", null);
+                    }
+                    return Optional.of(createdEquipment);
+                } catch (TechnicalException e) {
+                    throw e;
+                } catch (RuntimeException e) {
+                    throw new TechnicalException("Техническая ошибка при создании техники", e);
+                }
             }
             case 2 -> {
                 Equipment mouse = new Mouse(brandName, serialNumber);
-                equipmentRepository.add(mouse);
-                return mouse;
+                try {
+                    Equipment createdEquipment = equipmentRepository.add(mouse);
+                    if (createdEquipment == null) {
+                        throw new TechnicalException("Репозиторий вернул ошибку при сохранении техники", null);
+                    }
+                    return Optional.of(createdEquipment);
+                } catch (TechnicalException e) {
+                    throw e;
+                } catch (RuntimeException e) {
+                    throw new TechnicalException("Техническая ошибка при создании техники", e);
+                }
             }
             case 3 -> {
                 Equipment computer = new Computer(brandName, serialNumber);
-                equipmentRepository.add(computer);
-                return computer;
+                try {
+                    Equipment createdEquipment = equipmentRepository.add(computer);
+                    if (createdEquipment == null) {
+                        throw new TechnicalException("Репозиторий вернул ошибку при сохранении техники", null);
+                    }
+                    return Optional.of(createdEquipment);
+                } catch (TechnicalException e) {
+                    throw e;
+                } catch (RuntimeException e) {
+                    throw new TechnicalException("Техническая ошибка при создании техники", e);
+                }
             }
             default -> {
-                DisplayReadWriter.write(List.of("Такого оборудования не существует!"));
-                return null;
+                //TODO переделать на еще один сценарий
+                return Optional.empty();
             }
         }
     }
 
-    public void deleteById(int id) {
-        equipmentRepository.deleteById(id);
+    public boolean deleteEquipmentById(int equipmentId) {
+        return equipmentRepository.deleteEquipmentById(equipmentId);
     }
 
-    public Equipment findById(int id) {
-//        Equipment equipment = equipmentRepository.findById(id);
-//        equipment.setUser(userService.findByEquipmentId(this.id));
-//        return equipment;
-        return null;
+    public Optional<Equipment> findEquipmentById(int equipmentId) {
+        return equipmentRepository.findEquipmentById(equipmentId);
     }
 
     public void updateBrandName(int currentEquipmentId, String brandName) {
@@ -65,23 +84,6 @@ public class EquipmentService implements DisplayReadWriter {
 
     public void updateSerialNumber(int currentEquipmentId, int serialNumber) {
         equipmentRepository.updateSerialNumber(currentEquipmentId, serialNumber);
-    }
-
-    public void showAllEquipments() {
-        List<Equipment> catalog = equipmentRepository.getAllEquipments();
-
-        if (catalog.isEmpty()) {
-            System.out.println("Техника отсутствует");
-            return;
-        }
-
-        for (Equipment equipment : catalog) {
-            System.out.printf("id = %d, name = %s, serialNumber = %d, userId = %s%n",
-                    equipment.getId(),
-                    equipment.getBrandName(),
-                    equipment.getSerialNumber(),
-                    equipment.getUserId());
-        }
     }
 
     //метод для UserMenu
@@ -97,9 +99,10 @@ public class EquipmentService implements DisplayReadWriter {
             return;
         }
 
-        Optional<User> findUserResult = userService.findUserById(assignedUserId);
+        Optional<User> findUserResult = MainMenu.getInstance().getUserService().findUserById(assignedUserId);
         if (findUserResult.isEmpty()) {
-            DisplayReadWriter.write(List.of("Такого пользователя не существует"));
+            MainMenu.getInstance().getDisplayReadWriter()
+                    .write(List.of("Такого пользователя не существует"));
             return;
         }
 
@@ -126,7 +129,7 @@ public class EquipmentService implements DisplayReadWriter {
         return equipmentRepository.detachEquipment(equipmentId);
     }
 
-    public void showUsersList() {
-        userService.getUsersList();
+    public List<Equipment> getEquipmentsList() {
+        return equipmentRepository.getEquipmentsList();
     }
 }
