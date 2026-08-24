@@ -16,7 +16,9 @@ public class CollectionUtilsImpl implements CollectionUtils {
         //Через Set'ы убираем повторные сравнения с дубликатами во входящих коллекциях
         Set<Integer> inA = new HashSet<>(a);
         Set<Integer> inB = new HashSet<>(b);
+
         List<Integer> result = new ArrayList<>();
+
         for (Integer element : a) {
             if (inB.contains(element)) {
                 result.add(element);
@@ -28,6 +30,7 @@ public class CollectionUtilsImpl implements CollectionUtils {
                 result.add(element);
             }
         }
+
         return result;
     }
 
@@ -41,21 +44,23 @@ public class CollectionUtilsImpl implements CollectionUtils {
 
     @Override
     public Set<Integer> intersectionWithoutDuplicate(Collection<Integer> a, Collection<Integer> b) throws NullPointerException {
-        //Через Set'ы убираем повторные сравнения с дубликатами во входящих коллекциях
-        Set<Integer> inA = new HashSet<>(a);
-        Set<Integer> inB = new HashSet<>(b);
+        //Set<Integer> result = new HashSet<>(a);
+        //result.retainAll(b);
+        //или
         Set<Integer> result = new HashSet<>();
+
         for (Integer element : a) {
-            if (inB.contains(element)) {
+            if (b.contains(element)) {
                 result.add(element);
             }
         }
 
         for (Integer element : b) {
-            if (inA.contains(element)) {
+            if (a.contains(element)) {
                 result.add(element);
             }
         }
+
         return result;
     }
 
@@ -64,7 +69,9 @@ public class CollectionUtilsImpl implements CollectionUtils {
         //Через Set'ы убираем повторные сравнения с дубликатами во входящих коллекциях
         Set<Integer> inA = new HashSet<>(a);
         Set<Integer> inB = new HashSet<>(b);
+
         List<Integer> result = new ArrayList<>();
+
         for (Integer element : a) {
             if (!inB.contains(element)) {
                 result.add(element);
@@ -76,6 +83,7 @@ public class CollectionUtilsImpl implements CollectionUtils {
                 result.add(element);
             }
         }
+
         return result;
     }
 }
