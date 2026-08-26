@@ -21,7 +21,6 @@ public class Blackjack {
         }
 
         //1 Создать игрока
-        players.add(dealer);
         Scanner scanner = new Scanner(System.in);
         for (int playerNumber = 1; playerNumber <= playersQuantity; playerNumber++) {
             System.out.println("Игрок номер " + playerNumber + " введите своё имя:");
@@ -29,7 +28,7 @@ public class Blackjack {
             Player player = new Player(playerName);
             players.add(player);
         }
-        //scanner.close();
+        players.add(dealer);
         System.out.println("\nТасую колоду...");
         System.out.println("Раздаю по две карты...\n");
 
@@ -116,7 +115,7 @@ public class Blackjack {
             }
         }
 
-        if (!losers.isEmpty() && winners.isEmpty() && playersToCompare.isEmpty()) {
+        if (!losers.isEmpty() && winners.isEmpty()) {
             System.out.println("Проигравший: ");
             for (Player loser : losers) {
                 System.out.println("Игрок: " + loser.getName() + ", количество очков: " + loser.countPoints());
