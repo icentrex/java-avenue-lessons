@@ -30,18 +30,24 @@ public class EquipmentRepository {
         return Optional.ofNullable(equipments.get(equipmentId));
     }
 
-    public void updateBrandName(int equipmentId, String brandName) {
-        Equipment equipment = findEquipmentById(equipmentId);
-        if (equipment != null) {
-            equipment.setBrandName(brandName);
+    public boolean updateBrandName(int equipmentId, String brandName) {
+        Optional<Equipment> findEquipmentResult = findEquipmentById(equipmentId);
+        if (findEquipmentResult.isEmpty()) {
+            return false;
         }
+
+        findEquipmentResult.get().setBrandName(brandName);
+        return true;
     }
 
-    public void updateSerialNumber(int equipmentId, int serialNumber) {
-        Equipment equipment = findEquipmentById(equipmentId);
-        if (equipment != null) {
-            equipment.setSerialNumber(serialNumber);
+    public boolean updateSerialNumber(int equipmentId, int serialNumber) {
+        Optional<Equipment> findEquipmentResult = findEquipmentById(equipmentId);
+        if (findEquipmentResult.isEmpty()) {
+            return false;
         }
+
+        findEquipmentResult.get().setSerialNumber(serialNumber);
+        return true;
     }
 
     public boolean isSerialNumberExist(int serialNumber) {

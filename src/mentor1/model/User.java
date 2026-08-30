@@ -1,9 +1,7 @@
 package mentor1.model;
 
 import mentor1.menu.Cursoring;
-import mentor1.menu.DisplayReadWriter;
 import mentor1.menu.MainMenu;
-import mentor1.service.UserService;
 
 import java.util.List;
 import java.util.Objects;
@@ -82,7 +80,7 @@ public class User implements Cursoring {
 
     @Override
     public String getInfo() {
-        return "\n=== Меню \"Выбранный пользователь\" ===\nИнформация о пользователе:"
+        return "\n=== Меню \"Выбранный пользователь\" ===\nИнформация о пользователе: "
                 + String.format("userId = %s, name = %s, phone = %s%n", this.id, this.name, this.phone);
     }
 
@@ -113,8 +111,9 @@ public class User implements Cursoring {
                 }
 
                 List<String> formatted = freeEquipments.stream()
-                        .map(equipment -> String.format("id = %d, name = %s, serialNumber = %d, userId = %s%n",
+                        .map(equipment -> String.format("id = %d, type = %s, name = %s, serialNumber = %d, userId = %s%n",
                                 equipment.getId(),
+                                equipment.getClass().getSimpleName(),
                                 equipment.getBrandName(),
                                 equipment.getSerialNumber(),
                                 equipment.getUserId()))

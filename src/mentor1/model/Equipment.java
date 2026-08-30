@@ -77,9 +77,10 @@ public abstract class Equipment implements Cursoring {
 
     @Override
     public String getInfo() {
-        return "\n=== Меню \"Выбранное оборудование\" ===\nИнформация о технике:" +
-                String.format("id = %d, name = %s, serialNumber = %d, userId = %s%n",
+        return "\n=== Меню \"Выбранное оборудование\" ===\nИнформация о технике: " +
+                String.format("id = %d, type = %s, name = %s, serialNumber = %d, userId = %s%n",
                         this.id,
+                        this.getClass().getSimpleName(),
                         this.brandName,
                         this.serialNumber,
                         this.userId);
@@ -138,11 +139,12 @@ public abstract class Equipment implements Cursoring {
             case "3" -> {
                 String choice = MainMenu.getInstance().getDisplayReadWriter()
                         .writeAndRead(List.of(
-                                "Что хотите скорректировать?%n" +
-                                        "1 - Производителя%n" +
-                                        "2 - Серийный номер%n" +
+                                "Что хотите скорректировать?\n" +
+                                        "1 - Производителя\n" +
+                                        "2 - Серийный номер\n" +
                                         "3 - Тип устройства(в разработке)"));
                 switch (choice) {
+                    //Изменить производителя
                     case "1" -> {
                         String brandName = MainMenu.getInstance().getDisplayReadWriter()
                                 .writeAndRead(List.of("Введите корректное наименование производителя:"));
@@ -151,10 +153,17 @@ public abstract class Equipment implements Cursoring {
                                     .write(List.of("Недопустимо пустое имя!"));
                             return "";
                         }
-                        MainMenu.getInstance().getEquipmentService().updateBrandName(this.id, brandName);
-                        MainMenu.getInstance().getDisplayReadWriter()
-                                .write(List.of("Наименование производителя обновлено"));
+
+                        if (MainMenu.getInstance().getEquipmentService().updateBrandName(this.id, brandName)) {
+                            MainMenu.getInstance().getDisplayReadWriter()
+                                    .write(List.of("Наименование производителя обновлено"));
+                        } else {
+                            MainMenu.getInstance().getDisplayReadWriter()
+                                    .write(List.of("Ошибка. Техника не найдена"));
+                        }
+
                     }
+                    //Изменить серийный номер
                     case "2" -> {
                         String serialNumber = MainMenu.getInstance().getDisplayReadWriter()
                                 .writeAndRead(List.of("Введите корректный серийный номер:"));
@@ -163,9 +172,14 @@ public abstract class Equipment implements Cursoring {
                                     .write(List.of("Недопустим пустой серийный номер"));
                             return "";
                         }
-                        MainMenu.getInstance().getEquipmentService().updateSerialNumber(this.id, Integer.parseInt(serialNumber));
-                        MainMenu.getInstance().getDisplayReadWriter()
-                                .write(List.of("Серийный номер обновлен"));
+
+                        if (MainMenu.getInstance().getEquipmentService().updateSerialNumber(this.id, Integer.parseInt(serialNumber))) {
+                            MainMenu.getInstance().getDisplayReadWriter()
+                                    .write(List.of("Серийный номер обновлен"));
+                        } else {
+                            MainMenu.getInstance().getDisplayReadWriter()
+                                    .write(List.of("Ошибка. Техника не найдена"));
+                        }
                     }
                     default -> MainMenu.getInstance().getDisplayReadWriter()
                             .write(List.of("Команды не существует. Попробуйте еще раз!"));

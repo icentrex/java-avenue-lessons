@@ -41,6 +41,7 @@ public class UserService {
         if (userEquipments.isEmpty()) {
             return userRepository.deleteUserById(userId);
         }
+
         return false;
     }
 
@@ -52,6 +53,7 @@ public class UserService {
         if (userRepository.isPhoneExist(userId, phone)) {
             return false;
         }
+
         return userRepository.updateUserPhone(userId, phone);
     }
 

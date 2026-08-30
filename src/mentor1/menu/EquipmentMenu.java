@@ -24,8 +24,9 @@ public final class EquipmentMenu implements Cursoring {
         }
 
         List<String> formatted = catalog.stream()
-                .map(equipment -> String.format("id = %d, name = %s, serialNumber = %d, userId = %s%n",
+                .map(equipment -> String.format("id = %d, type= %s, name = %s, serialNumber = %d, userId = %s%n",
                         equipment.getId(),
+                        equipment.getClass().getSimpleName(),
                         equipment.getBrandName(),
                         equipment.getSerialNumber(),
                         equipment.getUserId()))

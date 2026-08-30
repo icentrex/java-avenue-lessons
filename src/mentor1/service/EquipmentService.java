@@ -78,12 +78,12 @@ public class EquipmentService {
         return equipmentRepository.findEquipmentById(equipmentId);
     }
 
-    public void updateBrandName(int currentEquipmentId, String brandName) {
-        equipmentRepository.updateBrandName(currentEquipmentId, brandName);
+    public boolean updateBrandName(int currentEquipmentId, String brandName) {
+        return equipmentRepository.updateBrandName(currentEquipmentId, brandName);
     }
 
-    public void updateSerialNumber(int currentEquipmentId, int serialNumber) {
-        equipmentRepository.updateSerialNumber(currentEquipmentId, serialNumber);
+    public boolean updateSerialNumber(int currentEquipmentId, int serialNumber) {
+        return equipmentRepository.updateSerialNumber(currentEquipmentId, serialNumber);
     }
 
     //метод для UserMenu
