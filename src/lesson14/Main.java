@@ -5,44 +5,44 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) {
         System.out.println("Создадим новое множество");
-        Set<Integer> set = new TreeSet<>();
-        System.out.println(set);
+        Set<Integer> integerSet = new TreeSet<>();
+        System.out.println(integerSet);
 
-        set.add(4);
-        set.add(1);
-        set.add(8);
-        set.add(2);
-        set.add(99);
-        set.add(2);
-        set.add(3);
-        set.add(6);
-        set.add(3);
-        set.add(15);
-        set.add(2);
+        integerSet.add(4);
+        integerSet.add(1);
+        integerSet.add(8);
+        integerSet.add(2);
+        integerSet.add(99);
+        integerSet.add(2);
+        integerSet.add(3);
+        integerSet.add(6);
+        integerSet.add(3);
+        integerSet.add(15);
+        integerSet.add(2);
 
-        System.out.println("\n" + set);
+        System.out.println("\n" + integerSet);
 
         System.out.println("\nsize(): Возвращает количество элементов в множестве.");
-        System.out.println(set.size());
+        System.out.println(integerSet.size());
 
         System.out.println("\nisEmpty(): Проверяет, пусто ли множество.");
-        System.out.println(set.isEmpty());
+        System.out.println(integerSet.isEmpty());
 
         System.out.println("\nremove(Object o): Удаляет элемент из множества, если элемент присутствует.");
-        set.remove(99);
-        System.out.println("\n" + set);
+        integerSet.remove(99);
+        System.out.println("\n" + integerSet);
 
         System.out.println("contains(Object o): Проверяет, содержится ли элемент в множестве.");
-        System.out.println(set.contains(99) ? "присутствует" : "отсутствует");
+        System.out.println(integerSet.contains(99) ? "присутствует" : "отсутствует");
 
         System.out.println("Удаляем все четные числа");
-//        for (Integer number : set) {
+//        for (Integer number : integerSet) {
 //            if (number % 2 == 0) {
-//               set.remove(number);
+//               integerSet.remove(number);
 //            }
 //        }
 
-        Iterator<Integer> iterator = set.iterator();
+        Iterator<Integer> iterator = integerSet.iterator();
         while (iterator.hasNext()) {
             Integer number = iterator.next();
             if (number % 2 == 0) {
@@ -50,6 +50,6 @@ public class Main {
             }
         }
 
-        System.out.println(set);
+        System.out.println(integerSet);
     }
 }

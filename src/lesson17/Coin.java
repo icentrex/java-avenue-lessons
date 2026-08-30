@@ -83,7 +83,7 @@ public class Coin implements Comparable<Coin> {
 
         //По металлу по возрастанию (от А до Я)
         if (!this.metalName.equalsIgnoreCase(o.metalName)) {
-            return o.metalName.compareTo(this.metalName);
+            return this.metalName.compareTo(o.metalName);
         }
 
         //По диаметру по возрастанию
