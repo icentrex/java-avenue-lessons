@@ -67,7 +67,6 @@ public class Fridge {
         for (String key : products.keySet()) {
             if (products.get(key) == minWeight) {
                 System.out.println(key);
-                break;
             }
         }
     }
@@ -82,7 +81,6 @@ public class Fridge {
         for (String key : products.keySet()) {
             if (products.get(key) == maxWeight) {
                 System.out.println(key);
-                break;
             }
         }
     }
