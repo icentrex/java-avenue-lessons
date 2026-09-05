@@ -1,6 +1,7 @@
 package lesson10;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Scanner;
 
 public class Blackjack {
@@ -70,7 +71,7 @@ public class Blackjack {
                         System.out.println("Игрок: " + player.getName()
                                 + ", количество очков: " + player.countPoints()));
             } else {
-                playersToCompare.sort((player1, player2) -> Integer.compare(21 - player1.countPoints(), 21 - player2.countPoints()));
+                playersToCompare.sort(Comparator.comparingInt(player -> 21 - player.countPoints()));
 
                 Player bestPlayer = playersToCompare.getFirst();
                 int bestPoints = bestPlayer.countPoints();
