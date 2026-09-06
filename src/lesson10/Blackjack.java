@@ -58,10 +58,20 @@ public class Blackjack {
         }
 
         if (!winners.isEmpty()) {
+            winners
+                    .stream()
+                    .filter(winner -> winner instanceof Dealer)
+                    .findFirst()
+                    .ifPresent(winner -> {
+                        System.out.println("Победитель диллер при равном счете: ");
+                        System.out.println("Игрок: " + winner.getName() + ", количество очков: " + winner.countPoints()))
+                        ;
+                    });
+
             System.out.println("Победители: ");
-            for (Player winner : winners) {
-                System.out.println("Игрок: " + winner.getName() + ", количество очков: " + winner.countPoints());
-            }
+            players.forEach(winner ->
+                    System.out.println("Игрок: " + winner.getName() + ", количество очков: " + winner.countPoints()));
+
         }
 
         if (!playersToCompare.isEmpty()) {
@@ -86,8 +96,8 @@ public class Blackjack {
                 playersToCompare
                         .stream()
                         .filter(player -> player.countPoints() < bestPoints)
-                        .peek(player -> System.out.println("Недобор: "))
                         .forEach(player -> {
+                            System.out.println("Недобор: ");
                             System.out.println("Игрок: " + player.getName()
                                     + ", количество очков: " + player.countPoints());
                         });
