@@ -2,6 +2,7 @@ package lesson10;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Scanner;
 
 public class Blackjack {
@@ -38,10 +39,26 @@ public class Blackjack {
     }
 
     public void calcWinner() {
-        //может быть два победителя
-        //диллер имеет приоритет если очки равны он победитель
-        //если все проиграли, дилер проиграл, то диллер выиграл
-        //TODO тут надо расписать логику
+        /*
+         Условия:
+         - Может быть два победителя
+         - Дилер имеет приоритет если очки равны он победитель
+         - Если все проиграли, дилер проиграл, то диллер выиграл
+
+         исходы
+
+         1 все набрали 21 = все победители ok
+         2 все набрали больше 21 = все проигравшие ok
+         3 Все набрали меньше 21. Выиграл тот кто ближе к 21 ok
+         4 есть 1 и 2 ok
+         5 есть 1 и 3 ok
+         6 есть 2 и 3 ok
+
+         Допусловие: наличие дилера меняет логику
+         7 все набрали 21 = все победители. Если дилер есть среди них - победитель он ок
+         8 все набрали больше 21 = все проигравшие. Если дилер есть среди них - победитель он ок
+         9 Все набрали меньше 21. Выиграл тот кто ближе к 21. Если очки равны, то победил дилер
+         */
         System.out.println("\n=== Таблица результатов ===");
         ArrayList<Player> winners = new ArrayList<>();
         ArrayList<Player> losers = new ArrayList<>();
@@ -57,29 +74,34 @@ public class Blackjack {
             }
         }
 
+        //1. все набрали 21 = все победители
+        //4. есть =21 и >21
         if (!winners.isEmpty()) {
-            winners
-                    .stream()
-                    .filter(winner -> winner instanceof Dealer)
-                    .findFirst()
-                    .ifPresent(winner -> {
-                        System.out.println("Победитель диллер при равном счете: ");
-                        System.out.println("Игрок: " + winner.getName() + ", количество очков: " + winner.countPoints()))
-                        ;
-                    });
-
             System.out.println("Победители: ");
-            players.forEach(winner ->
+            winners.forEach(winner ->
                     System.out.println("Игрок: " + winner.getName() + ", количество очков: " + winner.countPoints()));
-
         }
 
+        //2. все набрали больше 21 = все проигравшие
+        //4. есть =21 и >21. Обычное условие, есть победители и проигравшие, которые перебрали
+        //6. есть >21 и <21. Обычное условие, есть проигравшие, которые перебрали, есть победитель среди тех, кто недобрал
+        if (!losers.isEmpty()) {
+            System.out.println("Перебор: ");
+            losers.forEach(loser -> System.out.println("Игрок: " + loser.getName()
+                    + ", количество очков: " + loser.countPoints()));
+        }
+
+        //3. Все набрали меньше 21. Выиграл тот кто ближе к 21
+
         if (!playersToCompare.isEmpty()) {
+            //5. есть =21 и <21: Если есть победители, то playersToCompare сразу проигравшие
             if (!winners.isEmpty()) {
-                System.out.println("Недобор: ");
-                playersToCompare.forEach(player ->
-                        System.out.println("Игрок: " + player.getName()
-                                + ", количество очков: " + player.countPoints()));
+                System.out.println("Проигравшие: ");
+                playersToCompare.forEach(player -> System.out.println("Игрок: " + player.getName()
+                        + ", количество очков: " + player.countPoints()));
+
+                //6. есть >21 и <21. Обычное условие, есть проигравшие, которые перебрали и
+                //есть победитель и проигравшие среди тех, кто недобрал
             } else {
                 playersToCompare.sort(Comparator.comparingInt(player -> 21 - player.countPoints()));
 
@@ -93,55 +115,14 @@ public class Blackjack {
                         .forEach(player -> System.out.println("Игрок: " + player.getName()
                                 + ", количество очков: " + player.countPoints()));
 
+                System.out.println("Проигравшие: ");
                 playersToCompare
                         .stream()
                         .filter(player -> player.countPoints() < bestPoints)
-                        .forEach(player -> {
-                            System.out.println("Недобор: ");
-                            System.out.println("Игрок: " + player.getName()
-                                    + ", количество очков: " + player.countPoints());
-                        });
+                        .forEach(player -> System.out.println("Игрок: " + player.getName()
+                                + ", количество очков: " + player.countPoints()));
             }
         }
-
-        if (!losers.isEmpty()) {
-            System.out.println("Перебор: ");
-            losers.forEach(player -> System.out.println("Игрок: " + player.getName()
-                    + ", количество очков: " + player.countPoints()));
-        }
-
-
-//        if (!playersToCompare.isEmpty() && winners.isEmpty()) {
-//            playersToCompare.sort((Player currentPlayer, Player nextPlayer) -> {
-//                int currentPlayerDistanceTo21 = 21 - currentPlayer.countPoints();
-//                int nextPlayerDistanceTo21 = 21 - nextPlayer.countPoints();
-//                return Integer.compare(currentPlayerDistanceTo21, nextPlayerDistanceTo21);
-//            });
-//
-//            Player bestPlayer = playersToCompare.getFirst();
-//            int bestPoints = bestPlayer.countPoints();
-//            System.out.println("Победитель: " + bestPlayer.getName() + " с " + bestPoints + " очками");
-//
-//            for (int player = 1; player < playersToCompare.size(); player++) {
-//                Player nextWinner = playersToCompare.get(player);
-//
-//                int nextWinnerPoints = nextWinner.countPoints();
-//                if (nextWinnerPoints == bestPoints) {
-//                    System.out.println("Также победитель: " + nextWinner.getName() + " с " + nextWinnerPoints + " очками");
-//                }
-//            }
-//        }
-//
-//        if (!losers.isEmpty() && winners.isEmpty()) {
-//            System.out.println("Проигравший: ");
-//            for (Player loser : losers) {
-//                System.out.println("Игрок: " + loser.getName() + ", количество очков: " + loser.countPoints());
-//            }
-//
-//            if (losers.size() > 1 && losers.contains(dealer)) {
-//                System.out.println("По правилам победу одержал дилер!\n");
-//            }
-//        }
     }
 
     public void createPlayer(int playersQuantity) {
