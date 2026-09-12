@@ -24,11 +24,11 @@ public class User implements Cursoring {
         }
 
         List<String> formatted = userEquipments.stream()
-                .map(equipment -> String.format("id = %d, name = %s, serialNumber = %d, userId = %s%n",
+                .map(equipment -> String.format("id = %d, name = %s, serialNumber = %d, user = %s%n",
                         equipment.getId(),
                         equipment.getBrandName(),
                         equipment.getSerialNumber(),
-                        equipment.getUserId()))
+                        equipment.getUser()))
                 .toList();
         MainMenu.getInstance().getDisplayReadWriter().write(formatted);
     }
@@ -113,16 +113,16 @@ public class User implements Cursoring {
                 List<String> formatted = freeEquipments.stream()
                         .map(equipment -> String.format("id = %d, type = %s, name = %s, serialNumber = %d, userId = %s%n",
                                 equipment.getId(),
-                                equipment.getClass().getSimpleName(),
+                                equipment.getEquipmentType().getName(),
                                 equipment.getBrandName(),
                                 equipment.getSerialNumber(),
-                                equipment.getUserId()))
+                                equipment.getUser()))
                         .toList();
                 MainMenu.getInstance().getDisplayReadWriter().write(formatted);
 
                 String equipmentId = MainMenu.getInstance().getDisplayReadWriter()
                         .writeAndRead(List.of("Введите id техники:"));
-                if (MainMenu.getInstance().getEquipmentService().assignEquipment(this.id, Integer.parseInt(equipmentId))) {
+                if (MainMenu.getInstance().getEquipmentService().assignEquipment(this, Integer.parseInt(equipmentId))) {
                     MainMenu.getInstance().getDisplayReadWriter()
                             .write(List.of("Техника закреплена"));
                 } else {

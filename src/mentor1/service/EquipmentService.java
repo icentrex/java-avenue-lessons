@@ -1,77 +1,50 @@
 package mentor1.service;
 
 import mentor1.TechnicalException;
-import mentor1.menu.MainMenu;
 import mentor1.model.*;
 import mentor1.repository.EquipmentRepository;
+import mentor1.repository.EquipmentTypeRepository;
 
 import java.util.List;
 import java.util.Optional;
 
 public class EquipmentService {
     private final EquipmentRepository equipmentRepository;
+    private final EquipmentTypeRepository equipmentTypeRepository;
 
-    public EquipmentService(EquipmentRepository equipmentRepository) {
+    public EquipmentService(EquipmentRepository equipmentRepository, EquipmentTypeRepository equipmentTypeRepository) {
         this.equipmentRepository = equipmentRepository;
+        this.equipmentTypeRepository = equipmentTypeRepository;
     }
 
-    public Optional<Equipment> createEquipment(int type, String brandName, int serialNumber) {
+    public Optional<Equipment> createEquipment(EquipmentType equipmentType, String brandName, int serialNumber) {
         if (equipmentRepository.isSerialNumberExist(serialNumber)) {
             return Optional.empty();
         }
 
-        switch (type) {
-            case 1 -> {
-                Equipment monitor = new Monitor(brandName, serialNumber);
-                try {
-                    Equipment createdEquipment = equipmentRepository.add(monitor);
-                    if (createdEquipment == null) {
-                        throw new TechnicalException("Репозиторий вернул ошибку при сохранении техники", null);
-                    }
-                    return Optional.of(createdEquipment);
-                } catch (TechnicalException e) {
-                    throw e;
-                } catch (RuntimeException e) {
-                    throw new TechnicalException("Техническая ошибка при создании техники", e);
-                }
+        Equipment equipment = new Equipment(equipmentType, brandName, serialNumber);
+        try {
+            Equipment createdEquipment = equipmentRepository.add(equipment);
+            if (createdEquipment == null) {
+                throw new TechnicalException("Репозиторий вернул ошибку при сохранении техники", null);
             }
-            case 2 -> {
-                Equipment mouse = new Mouse(brandName, serialNumber);
-                try {
-                    Equipment createdEquipment = equipmentRepository.add(mouse);
-                    if (createdEquipment == null) {
-                        throw new TechnicalException("Репозиторий вернул ошибку при сохранении техники", null);
-                    }
-                    return Optional.of(createdEquipment);
-                } catch (TechnicalException e) {
-                    throw e;
-                } catch (RuntimeException e) {
-                    throw new TechnicalException("Техническая ошибка при создании техники", e);
-                }
-            }
-            case 3 -> {
-                Equipment computer = new Computer(brandName, serialNumber);
-                try {
-                    Equipment createdEquipment = equipmentRepository.add(computer);
-                    if (createdEquipment == null) {
-                        throw new TechnicalException("Репозиторий вернул ошибку при сохранении техники", null);
-                    }
-                    return Optional.of(createdEquipment);
-                } catch (TechnicalException e) {
-                    throw e;
-                } catch (RuntimeException e) {
-                    throw new TechnicalException("Техническая ошибка при создании техники", e);
-                }
-            }
-            default -> {
-                //TODO переделать на еще один сценарий
-                return Optional.empty();
-            }
+            return Optional.of(createdEquipment);
+        } catch (TechnicalException e) {
+            throw e;
+        } catch (RuntimeException e) {
+            throw new TechnicalException("Техническая ошибка при создании техники", e);
         }
     }
 
     public boolean deleteEquipmentById(int equipmentId) {
-        return equipmentRepository.deleteEquipmentById(equipmentId);
+        Optional<Equipment> equipmentFindResult = equipmentRepository.findEquipmentById(equipmentId);
+        if (equipmentFindResult.isPresent()) {
+            if (equipmentFindResult.get().getUser() == null) {
+                return equipmentRepository.deleteEquipmentById(equipmentId);
+            }
+        }
+
+        return false;
     }
 
     public Optional<Equipment> findEquipmentById(int equipmentId) {
@@ -86,31 +59,16 @@ public class EquipmentService {
         return equipmentRepository.updateSerialNumber(currentEquipmentId, serialNumber);
     }
 
-    //метод для UserMenu
+    public boolean updateEquipmentType(int equipmentId, EquipmentType equipmentType) {
+        return equipmentRepository.updateEquipmentType(equipmentId, equipmentType);
+    }
+
+    //метод для UserMenu и User
     public List<Equipment> getUserEquipments(int userId) {
         return equipmentRepository.getUserEquipments(userId);
     }
 
-    public void showAssignedUserByEquipmentId(int equipmentId) {
-        int assignedUserId = equipmentRepository.getAssignedUserByEquipmentId(equipmentId);
-
-        if (assignedUserId == 0) {
-            System.out.println("Техника не закреплена за пользователем");
-            return;
-        }
-
-        Optional<User> findUserResult = MainMenu.getInstance().getUserService().findUserById(assignedUserId);
-        if (findUserResult.isEmpty()) {
-            MainMenu.getInstance().getDisplayReadWriter()
-                    .write(List.of("Такого пользователя не существует"));
-            return;
-        }
-
-        User user = findUserResult.get();
-        System.out.printf("userId = %s, name = %s, phone = %s%n", user.getId(), user.getName(), user.getPhone());
-    }
-
-    //метод для UserMenu
+    //метод для UserMenu и User
     public List<Equipment> getFreeEquipments() {
         List<Equipment> freeEquipments = equipmentRepository.getFreeEquipments();
 
@@ -121,8 +79,8 @@ public class EquipmentService {
         return freeEquipments;
     }
 
-    public boolean assignEquipment(int userId, int equipmentId) {
-        return equipmentRepository.assignEquipment(userId, equipmentId);
+    public boolean assignEquipment(User user, int equipmentId) {
+        return equipmentRepository.assignEquipment(user, equipmentId);
     }
 
     public boolean detachEquipment(int equipmentId) {
@@ -131,5 +89,9 @@ public class EquipmentService {
 
     public List<Equipment> getEquipmentsList() {
         return equipmentRepository.getEquipmentsList();
+    }
+
+    public List<EquipmentType> getEquipmentTypesList() {
+        return equipmentTypeRepository.getEquipmentTypesList();
     }
 }

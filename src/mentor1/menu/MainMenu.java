@@ -1,6 +1,7 @@
 package mentor1.menu;
 
 import mentor1.repository.EquipmentRepository;
+import mentor1.repository.EquipmentTypeRepository;
 import mentor1.repository.UserRepository;
 import mentor1.service.EquipmentService;
 import mentor1.service.UserService;
@@ -22,9 +23,10 @@ public class MainMenu implements Cursoring {
 
         UserRepository userRepository = new UserRepository();
         EquipmentRepository equipmentRepository = new EquipmentRepository();
+        EquipmentTypeRepository equipmentTypeRepository = new EquipmentTypeRepository();
 
         this.userService = new UserService(userRepository);
-        this.equipmentService = new EquipmentService(equipmentRepository);
+        this.equipmentService = new EquipmentService(equipmentRepository, equipmentTypeRepository);
 
         this.userMenu = new UserMenu(userService);
         this.equipmentMenu = new EquipmentMenu(equipmentService);

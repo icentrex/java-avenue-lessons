@@ -9,12 +9,6 @@ public class EquipmentRepository {
     private final Map<Integer, Equipment> equipments = new HashMap<>();
     private int nextId = 1;
 
-    public EquipmentRepository() {
-        add(new Monitor("Samsung", 1));
-        add(new Mouse("Logitech", 2));
-        add(new Computer("Dell", 3));
-    }
-
     public Equipment add(Equipment equipment) {
         equipment.setId(nextId);
         equipments.put(nextId, equipment);
@@ -50,6 +44,16 @@ public class EquipmentRepository {
         return true;
     }
 
+    public boolean updateEquipmentType(int equipmentId, EquipmentType equipmentType) {
+        Optional<Equipment> findEquipmentResult = findEquipmentById(equipmentId);
+        if (findEquipmentResult.isEmpty()) {
+            return false;
+        }
+
+        findEquipmentResult.get().setEquipmentType(equipmentType);
+        return true;
+    }
+
     public boolean isSerialNumberExist(int serialNumber) {
         return equipments.values().stream()
                 .anyMatch(equipment -> (equipment.getSerialNumber() == serialNumber));
@@ -61,25 +65,25 @@ public class EquipmentRepository {
                 .collect(Collectors.toList());
     }
 
-    //метод для UserMenu
+    //метод для UserMenu и User
     public List<Equipment> getUserEquipments(int userId) {
         return equipments.values().stream()
-                .filter(equipment -> equipment.getUserId() == userId)
+                .filter(equipment -> equipment.getUser() != null && equipment.getUser().getId() == userId)
                 .collect(Collectors.toList());
     }
 
-    //метод для UserMenu
+    //метод для UserMenu и User
     public List<Equipment> getFreeEquipments() {
         return equipments.values().stream()
-                .filter((equipment -> equipment.getUserId() == 0))
+                .filter((equipment -> equipment.getUser() == null))
                 .collect(Collectors.toList());
     }
 
-    public boolean assignEquipment(int userId, int equipmentId) {
+    public boolean assignEquipment(User user, int equipmentId) {
         Equipment equipment = equipments.get(equipmentId);
 
-        if (equipment != null) {
-            equipment.setUserId(userId);
+        if (equipment != null && user != null) {
+            equipment.setUser(user);
             return true;
         }
         return false;
@@ -89,13 +93,9 @@ public class EquipmentRepository {
         Equipment equipment = equipments.get(equipmentId);
 
         if (equipment != null) {
-            equipment.setUserId(0);
+            equipment.setUser(null);
             return true;
         }
         return false;
-    }
-
-    public int getAssignedUserByEquipmentId(int equipmentId) {
-        return equipments.get(equipmentId).getUserId();
     }
 }

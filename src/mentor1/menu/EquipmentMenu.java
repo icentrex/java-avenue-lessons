@@ -2,6 +2,7 @@ package mentor1.menu;
 
 import mentor1.TechnicalException;
 import mentor1.model.Equipment;
+import mentor1.model.EquipmentType;
 import mentor1.service.EquipmentService;
 
 import java.util.List;
@@ -24,12 +25,12 @@ public final class EquipmentMenu implements Cursoring {
         }
 
         List<String> formatted = catalog.stream()
-                .map(equipment -> String.format("id = %d, type= %s, name = %s, serialNumber = %d, userId = %s%n",
+                .map(equipment -> String.format("id = %d, type= %s, name = %s, serialNumber = %d, user = %s%n",
                         equipment.getId(),
-                        equipment.getClass().getSimpleName(),
+                        equipment.getEquipmentType(),
                         equipment.getBrandName(),
                         equipment.getSerialNumber(),
-                        equipment.getUserId()))
+                        equipment.getUser()))
                 .toList();
         MainMenu.getInstance().getDisplayReadWriter().write(formatted);
     }
@@ -56,8 +57,19 @@ public final class EquipmentMenu implements Cursoring {
         switch (commandNumber) {
             //Добавить технику
             case "1" -> {
-                String type = MainMenu.getInstance().getDisplayReadWriter()
-                        .writeAndRead(List.of("Введите тип оборудования:\n1 - Монитор\n2 - Мышка\n3 - Системный блок"));
+                MainMenu.getInstance().getDisplayReadWriter().write(List.of("Существующие типы оборудования:"));
+                List<EquipmentType> equipmentTypesList = equipmentService.getEquipmentTypesList();
+                MainMenu.getInstance().getDisplayReadWriter().write(equipmentTypesList
+                        .stream()
+                        .map(equipmentType -> String.format("id = %d, name = %s", equipmentType.getId(), equipmentType.getName()))
+                        .toList());
+                String typeId = MainMenu.getInstance().getDisplayReadWriter()
+                        .writeAndRead(List.of("Выберите тип оборудования (введите ID):"));
+                EquipmentType chosenType = equipmentTypesList
+                        .stream()
+                        .filter(equipmentType -> equipmentType.getId() == Integer.parseInt(typeId))
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalArgumentException("Тип оборудования с id= " + typeId + " не найден"));
                 String brandName = MainMenu.getInstance().getDisplayReadWriter()
                         .writeAndRead(List.of("Введите производителя:"));
                 String serialNumber = MainMenu.getInstance().getDisplayReadWriter()
@@ -65,7 +77,7 @@ public final class EquipmentMenu implements Cursoring {
 
                 try {
                     Optional<Equipment> createEquipmentResult = equipmentService.createEquipment(
-                            Integer.parseInt(type),
+                            chosenType,
                             brandName,
                             Integer.parseInt(serialNumber));
 
