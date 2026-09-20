@@ -8,7 +8,7 @@ public class TestRunner {
 
     public static void main(String[] args) {
         // JUnitCore — программный запуск тестов (то же, что org.junit.runner.JUnitCore в терминале)
-        Result result = JUnitCore.runClasses(mentor1.tests.EquipmentRepositoryTest.class);
+        Result result = JUnitCore.runClasses(EquipmentRepositoryTest.class);
 
         // Итоговая сводка
         System.out.println("Всего тестов : " + result.getRunCount());
