@@ -1,4 +1,4 @@
-package mentor1.tests;
+package tests;
 
 import mentor1.model.Equipment;
 import mentor1.model.EquipmentType;
