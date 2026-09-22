@@ -14,6 +14,14 @@ public class Equipment implements Cursoring {
     private EquipmentType equipmentType;
     private User user;
 
+    public Equipment(int id, EquipmentType equipmentType, String brandName, int serialNumber) {
+        this.id = id;
+        this.equipmentType = equipmentType;
+        this.brandName = brandName;
+        this.serialNumber = serialNumber;
+        this.user = null;
+    }
+
     public Equipment(EquipmentType equipmentType, String brandName, int serialNumber) {
         this.equipmentType = equipmentType;
         this.brandName = brandName;

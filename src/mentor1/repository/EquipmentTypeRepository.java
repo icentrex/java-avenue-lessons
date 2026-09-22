@@ -1,9 +1,9 @@
 package mentor1.repository;
 
+import com.sun.jdi.request.DuplicateRequestException;
 import mentor1.model.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class EquipmentTypeRepository {
     private final HashMap<Integer, EquipmentType> equipmentTypes = new HashMap<>();
@@ -15,11 +15,17 @@ public class EquipmentTypeRepository {
         add(new EquipmentType("Наушники"));
     }
 
-    public EquipmentType add(EquipmentType equipmentType) {
-        equipmentType.setId(nextId);
-        equipmentTypes.put(nextId, equipmentType);
-        nextId++;
-        return equipmentType;
+    public EquipmentType add(EquipmentType equipmentType) throws DuplicateRequestException {
+        Optional<EquipmentType> equipmentTypeFindResult = findEquipmentTypeByName(equipmentType.getName());
+
+        if (equipmentTypeFindResult.isEmpty()) {
+            equipmentType.setId(nextId);
+            equipmentTypes.put(nextId, equipmentType);
+            nextId++;
+            return equipmentType;
+        } else {
+            throw new DuplicateRequestException("Такой тип техники уже существует");
+        }
     }
 
     public boolean deleteEquipmentTypeById(int equipmentTypeId) {
@@ -28,6 +34,15 @@ public class EquipmentTypeRepository {
 
     public Optional<EquipmentType> findEquipmentTypeById(int equipmentTypeId) {
         return Optional.ofNullable(equipmentTypes.get(equipmentTypeId));
+    }
+
+    public Optional<EquipmentType> findEquipmentTypeByName(String name) {
+        for (EquipmentType equipmentType : equipmentTypes.values()) {
+            if (equipmentType.getName().equalsIgnoreCase(name)) {
+                return Optional.of(equipmentType);
+            }
+        }
+        return Optional.empty();
     }
 
     public List<EquipmentType> getEquipmentTypesList() {
