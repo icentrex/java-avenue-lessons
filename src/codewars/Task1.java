@@ -8,13 +8,13 @@ public class Task1 {
         int charInStringCount = 0;
 
 
-        for (int checkCharIndex = 0; checkCharIndex < checkVowelArray.length; checkCharIndex++) {
+        for (char c : checkVowelArray) {
             for (int charIndex = 0; charIndex < stringTest.length(); charIndex++) {
-                if (stringTest.charAt(charIndex) == checkVowelArray[checkCharIndex]) {
+                if (stringTest.charAt(charIndex) == c) {
                     charInStringCount++;
                 }
             }
-            System.out.println("Cимвол \'" + checkVowelArray[checkCharIndex] + "\' встречается в строке " +
+            System.out.println("Cимвол '" + c + "' встречается в строке " +
                     charInStringCount + " раз");
             charInStringCount = 0;
         }
