@@ -39,25 +39,43 @@ public class Blackjack {
     }
 
     public void calcWinner() {
-        /*
-         Условия:
-         - Может быть два победителя
-         - Дилер имеет приоритет если очки равны он победитель
-         - Если все проиграли, дилер проиграл, то диллер выиграл
-
-         исходы
-
-         1 все набрали 21 = все победители ok
-         2 все набрали больше 21 = все проигравшие ok
-         3 Все набрали меньше 21. Выиграл тот кто ближе к 21 ok
-         4 есть 1 и 2 ok
-         5 есть 1 и 3 ok
-         6 есть 2 и 3 ok
-
-         Допусловие: наличие дилера меняет логику
-         7 все набрали 21 = все победители. Если дилер есть среди них - победитель он ок
-         8 все набрали больше 21 = все проигравшие. Если дилер есть среди них - победитель он ок
-         9 Все набрали меньше 21. Выиграл тот кто ближе к 21. Если очки равны, то победил дилер
+        /**
+         * Правила определения победителя
+         *
+         * Условия:
+         * - Может быть два победителя
+         * - Дилер имеет приоритет если очки равны он победитель
+         * - Если все проиграли, дилер проиграл, то диллер выиграл
+         *
+         * Колонки:
+         * рука игрока (=21, <21, >21) и рука дилера (dealer = 21, dealer < 21, dealer > 21).
+         * "+" — условие выполняется для данного исхода.
+         *
+         * +--------+-----+-----+-----+-------------+------------+-------------+------------------------------------------------+----------------+
+         * | Исходы | =21 | <21 | >21 | dealer = 21 | dealer <21 | dealer > 21 | Победитель                                    | Проигравший    |
+         * +--------+-----+-----+-----+-------------+------------+-------------+------------------------------------------------+----------------+
+         * |   1    |  +  |     |     |      +      |            |             | дилер                                          | все остальные  |
+         * |  10    |  +  |  +  |     |      +      |            |             | дилер                                          | все остальные  |
+         * |  13    |  +  |     |  +  |      +      |            |             | дилер                                          | все остальные  |
+         * |  19    |  +  |  +  |  +  |      +      |            |             | дилер                                          | все остальные  |
+         * |  16    |     |  +  |  +  |      +      |            |             | дилер                                          | все остальные  |
+         * |   4    |     |  +  |     |      +      |            |             | дилер                                          | все остальные  |
+         * |   7    |     |     |  +  |      +      |            |             | дилер                                          | все остальные  |
+         * |   8    |     |     |  +  |             |      +     |             | дилер                                          | все остальные  |
+         * |   9    |     |     |  +  |             |            |      +      | дилер                                          | все остальные  |
+         * |  18    |     |  +  |  +  |             |            |      +      | кто ближе к 21                                 | все остальные  |
+         * |   6    |     |  +  |     |             |            |      +      | кто ближе к 21                                 | все остальные  |
+         * |  17    |     |  +  |  +  |             |      +     |             | кто ближе к 21. Если = с дилером победил дилер | все остальные  |
+         * |   5    |     |  +  |     |             |      +     |             | кто ближе к 21. Если = с дилером победил дилер | все остальные  |
+         * |  11    |  +  |  +  |     |             |      +     |             | кто набрал 21                                  | все остальные  |
+         * |  12    |  +  |  +  |     |             |            |      +      | кто набрал 21                                  | все остальные  |
+         * |  14    |  +  |     |  +  |             |      +     |             | кто набрал 21                                  | все остальные  |
+         * |  15    |  +  |     |  +  |             |            |      +      | кто набрал 21                                  | все остальные  |
+         * |   2    |  +  |     |     |             |      +     |             | кто набрал 21                                  | дилер          |
+         * |  20    |  +  |  +  |  +  |             |      +     |             | кто набрал 21                                  | все остальные  |
+         * |  21    |  +  |  +  |  +  |             |            |      +      | кто набрал 21                                  | все остальные  |
+         * |   3    |  +  |     |     |             |            |      +      | кто набрал 21                                  | дилер          |
+         * +--------+-----+-----+-----+-------------+------------+-------------+------------------------------------------------+----------------+
          */
         System.out.println("\n=== Таблица результатов ===");
         ArrayList<Player> winners = new ArrayList<>();
@@ -74,53 +92,64 @@ public class Blackjack {
             }
         }
 
-        //1. все набрали 21 = все победители
-        //4. есть =21 и >21
         if (!winners.isEmpty()) {
-            System.out.println("Победители: ");
-            winners.forEach(winner ->
-                    System.out.println("Игрок: " + winner.getName() + ", количество очков: " + winner.countPoints()));
-        }
-
-        //2. все набрали больше 21 = все проигравшие
-        //4. есть =21 и >21. Обычное условие, есть победители и проигравшие, которые перебрали
-        //6. есть >21 и <21. Обычное условие, есть проигравшие, которые перебрали, есть победитель среди тех, кто недобрал
-        if (!losers.isEmpty()) {
-            System.out.println("Перебор: ");
-            losers.forEach(loser -> System.out.println("Игрок: " + loser.getName()
-                    + ", количество очков: " + loser.countPoints()));
-        }
-
-        //3. Все набрали меньше 21. Выиграл тот кто ближе к 21
-
-        if (!playersToCompare.isEmpty()) {
-            //5. есть =21 и <21: Если есть победители, то playersToCompare сразу проигравшие
-            if (!winners.isEmpty()) {
+            if (winners.contains(dealer)) {
+                System.out.println("Победил дилер, количество очков: " + dealer.countPoints());
                 System.out.println("Проигравшие: ");
-                playersToCompare.forEach(player -> System.out.println("Игрок: " + player.getName()
+                players.stream()
+                        .filter(player -> !player.equals(dealer))
+                        .forEach(player ->
+                                System.out.println("Игрок: " + player.getName() + ", количество очков: " + player.countPoints()));
+            } else {
+                System.out.println("Победители: ");
+                winners.forEach(winner ->
+                        System.out.println("Игрок: " + winner.getName() + ", количество очков: " + winner.countPoints()));
+                System.out.println("Проигравшие: ");
+                players.stream()
+                        .filter(player -> !winners.contains(player))
+                        .forEach(player ->
+                                System.out.println("Игрок: " + player.getName() + ", количество очков: " + player.countPoints()));
+            }
+        } else if (!playersToCompare.isEmpty()) {
+            playersToCompare.sort(Comparator.comparingInt(player -> 21 - player.countPoints()));
+
+            Player bestPlayer = playersToCompare.getFirst();
+            int bestPoints = bestPlayer.countPoints();
+
+            List<Player> playersToCompareWinners = playersToCompare.stream()
+                    .filter(player -> player.countPoints() == bestPoints)
+                    .toList();
+
+            if (playersToCompareWinners.contains(dealer)) {
+                System.out.println("Победил дилер, количество очков: " + dealer.countPoints());
+                System.out.println("Проигравшие: ");
+                players.stream()
+                        .filter(player -> !player.equals(dealer))
+                        .forEach(player ->
+                                System.out.println("Игрок: " + player.getName() + ", количество очков: " + player.countPoints()));
+            } else {
+                System.out.println("Победители: ");
+                playersToCompareWinners.forEach(player -> System.out.println("Игрок: " + player.getName()
                         + ", количество очков: " + player.countPoints()));
 
-                //6. есть >21 и <21. Обычное условие, есть проигравшие, которые перебрали и
-                //есть победитель и проигравшие среди тех, кто недобрал
-            } else {
-                playersToCompare.sort(Comparator.comparingInt(player -> 21 - player.countPoints()));
-
-                Player bestPlayer = playersToCompare.getFirst();
-                int bestPoints = bestPlayer.countPoints();
-
-                System.out.println("Победители: ");
-                playersToCompare
-                        .stream()
-                        .filter(player -> player.countPoints() == bestPoints)
-                        .forEach(player -> System.out.println("Игрок: " + player.getName()
-                                + ", количество очков: " + player.countPoints()));
-
                 System.out.println("Проигравшие: ");
-                playersToCompare
-                        .stream()
-                        .filter(player -> player.countPoints() < bestPoints)
-                        .forEach(player -> System.out.println("Игрок: " + player.getName()
-                                + ", количество очков: " + player.countPoints()));
+                players.stream()
+                        .filter(player -> !playersToCompareWinners.contains(player))
+                        .forEach(player ->
+                                System.out.println("Игрок: " + player.getName() + ", количество очков: " + player.countPoints()));
+            }
+        } else if (!losers.isEmpty()) {
+            if (losers.contains(dealer)) {
+                System.out.println("Победил дилер (приоритет дилера), количество очков: " + dealer.countPoints());
+                System.out.println("Проигравшие: ");
+                players.stream()
+                        .filter(player -> !player.equals(dealer))
+                        .forEach(player ->
+                                System.out.println("Игрок: " + player.getName() + ", количество очков: " + player.countPoints()));
+            } else {
+                System.out.println("Проигравшие: ");
+                players.forEach(player ->
+                        System.out.println("Игрок: " + player.getName() + ", количество очков: " + player.countPoints()));
             }
         }
     }
