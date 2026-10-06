@@ -1,85 +1,74 @@
 package mentor1.service;
 
+import mentor1.TechnicalException;
 import mentor1.model.*;
 import mentor1.repository.EquipmentRepository;
+import mentor1.repository.EquipmentTypeRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public class EquipmentService {
     private final EquipmentRepository equipmentRepository;
-    private UserService userService;
+    private final EquipmentTypeRepository equipmentTypeRepository;
 
-    public EquipmentService(EquipmentRepository equipmentRepository) {
+    public EquipmentService(EquipmentRepository equipmentRepository, EquipmentTypeRepository equipmentTypeRepository) {
         this.equipmentRepository = equipmentRepository;
+        this.equipmentTypeRepository = equipmentTypeRepository;
     }
 
-    public void setUserService(UserService userService) {
-        this.userService = userService;
-    }
-
-    public Equipment add(int type, String brandName, int serialNumber) {
-        return equipmentRepository.add(type, brandName, serialNumber);
-    }
-
-    public void deleteById(int id) {
-        equipmentRepository.deleteById(id);
-    }
-
-    public Equipment findById(int id) {
-//        Equipment equipment = equipmentRepository.findById(id);
-//        equipment.setUser(userService.findByEquipmentId(this.id));
-//        return equipment;
-        return null;
-    }
-
-    public void updateBrandName(int currentEquipmentId, String brandName) {
-        equipmentRepository.updateBrandName(currentEquipmentId, brandName);
-    }
-
-    public void updateSerialNumber(int currentEquipmentId, int serialNumber) {
-        equipmentRepository.updateSerialNumber(currentEquipmentId, serialNumber);
-    }
-
-    public void showAllEquipments() {
-        List<Equipment> catalog = equipmentRepository.getAllEquipments();
-
-        if (catalog.isEmpty()) {
-            System.out.println("Техника отсутствует");
-            return;
+    public Optional<Equipment> createEquipment(EquipmentType equipmentType, String brandName, int serialNumber) {
+        if (equipmentRepository.isSerialNumberExist(serialNumber)) {
+            return Optional.empty();
         }
 
-        for (Equipment equipment : catalog) {
-            System.out.printf("id = %d, name = %s, serialNumber = %d, userId = %s%n",
-                    equipment.getId(),
-                    equipment.getBrandName(),
-                    equipment.getSerialNumber(),
-                    equipment.getUserId());
+        Equipment equipment = new Equipment(equipmentType, brandName, serialNumber);
+        try {
+            Equipment createdEquipment = equipmentRepository.add(equipment);
+            if (createdEquipment == null) {
+                throw new TechnicalException("Репозиторий вернул ошибку при сохранении техники", null);
+            }
+            return Optional.of(createdEquipment);
+        } catch (TechnicalException e) {
+            throw e;
+        } catch (RuntimeException e) {
+            throw new TechnicalException("Техническая ошибка при создании техники", e);
         }
     }
 
-    //метод для UserMenu
-    public List<Equipment> getUserEquipments(String userId) {
+    public boolean deleteEquipmentById(int equipmentId) {
+        Optional<Equipment> equipmentFindResult = equipmentRepository.findEquipmentById(equipmentId);
+        if (equipmentFindResult.isPresent()) {
+            if (equipmentFindResult.get().getUser() == null) {
+                return equipmentRepository.deleteEquipmentById(equipmentId);
+            }
+        }
+
+        return false;
+    }
+
+    public Optional<Equipment> findEquipmentById(int equipmentId) {
+        return equipmentRepository.findEquipmentById(equipmentId);
+    }
+
+    public boolean updateBrandName(int currentEquipmentId, String brandName) {
+        return equipmentRepository.updateBrandName(currentEquipmentId, brandName);
+    }
+
+    public boolean updateSerialNumber(int currentEquipmentId, int serialNumber) {
+        return equipmentRepository.updateSerialNumber(currentEquipmentId, serialNumber);
+    }
+
+    public boolean updateEquipmentType(int equipmentId, EquipmentType equipmentType) {
+        return equipmentRepository.updateEquipmentType(equipmentId, equipmentType);
+    }
+
+    //метод для UserMenu и User
+    public List<Equipment> getUserEquipments(int userId) {
         return equipmentRepository.getUserEquipments(userId);
     }
 
-    public void showAssignedUserByEquipmentId(int equipmentId) {
-        String assignedUserId = equipmentRepository.getAssignedUserByEquipmentId(equipmentId);
-
-        if (assignedUserId.isEmpty()) {
-            System.out.println("Техника не закреплена за пользователем");
-            return;
-        }
-
-        User user = userService.findByUserId(assignedUserId);
-        if (user == null) {
-            System.out.println("Такого пользователя не существует");
-            return;
-        }
-
-        System.out.printf("userId = %s, name = %s, phone = %s%n", user.getId(), user.getName(), user.getPhoneNumber());
-    }
-
-    //метод для UserMenu
+    //метод для UserMenu и User
     public List<Equipment> getFreeEquipments() {
         List<Equipment> freeEquipments = equipmentRepository.getFreeEquipments();
 
@@ -90,30 +79,19 @@ public class EquipmentService {
         return freeEquipments;
     }
 
-    public void assignEquipment(String userId, int equipmentId) {
-        equipmentRepository.assignEquipment(userId, equipmentId);
+    public boolean assignEquipment(User user, int equipmentId) {
+        return equipmentRepository.assignEquipment(user, equipmentId);
     }
 
-    public void detachEquipment(int equipmentId) {
-        equipmentRepository.detachEquipment(equipmentId);
+    public boolean detachEquipment(int equipmentId) {
+        return equipmentRepository.detachEquipment(equipmentId);
     }
 
-    public void showEquipmentInfo(int equipmentId) {
-        Equipment equipment = equipmentRepository.getEquipmentInfo(equipmentId);
-
-        if (equipment == null) {
-            System.out.println("Техники с таким id не существует");
-            return;
-        }
-
-        System.out.printf("id = %d, name = %s, serialNumber = %d, userId = %s%n",
-                equipment.getId(),
-                equipment.getBrandName(),
-                equipment.getSerialNumber(),
-                equipment.getUserId());
+    public List<Equipment> getEquipmentsList() {
+        return equipmentRepository.getEquipmentsList();
     }
 
-    public void showUsersList() {
-        userService.getUsersList();
+    public List<EquipmentType> getEquipmentTypesList() {
+        return equipmentTypeRepository.getEquipmentTypesList();
     }
 }

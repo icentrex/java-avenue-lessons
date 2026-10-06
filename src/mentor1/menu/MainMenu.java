@@ -1,10 +1,12 @@
 package mentor1.menu;
 
-import mentor1.Cursoring;
 import mentor1.repository.EquipmentRepository;
+import mentor1.repository.EquipmentTypeRepository;
 import mentor1.repository.UserRepository;
 import mentor1.service.EquipmentService;
 import mentor1.service.UserService;
+
+import java.util.List;
 
 public class MainMenu implements Cursoring {
     private static MainMenu instance;
@@ -12,22 +14,26 @@ public class MainMenu implements Cursoring {
     private final EquipmentMenu equipmentMenu;
     private final UserService userService;
     private final EquipmentService equipmentService;
-    private final ConsoleDisplay display = new ConsoleDisplay();
     private Cursoring cursorObject;
     private boolean isNeedContinue = true;
+    private DisplayReadWriterImpl displayReadWriter;
 
     private MainMenu() {
+        displayReadWriter = new DisplayReadWriterImpl();
+
         UserRepository userRepository = new UserRepository();
         EquipmentRepository equipmentRepository = new EquipmentRepository();
+        EquipmentTypeRepository equipmentTypeRepository = new EquipmentTypeRepository();
 
         this.userService = new UserService(userRepository);
-        this.equipmentService = new EquipmentService(equipmentRepository);
-
-        userService.setEquipmentService(equipmentService);
-        equipmentService.setUserService(userService);
+        this.equipmentService = new EquipmentService(equipmentRepository, equipmentTypeRepository);
 
         this.userMenu = new UserMenu(userService);
         this.equipmentMenu = new EquipmentMenu(equipmentService);
+    }
+
+    public DisplayReadWriter getDisplayReadWriter() {
+        return displayReadWriter;
     }
 
     public UserService getUserService() {
@@ -36,10 +42,6 @@ public class MainMenu implements Cursoring {
 
     public EquipmentService getEquipmentService() {
         return equipmentService;
-    }
-
-    public ConsoleDisplay getDisplay() {
-        return display;
     }
 
     public static MainMenu getInstance() {
@@ -51,10 +53,10 @@ public class MainMenu implements Cursoring {
 
     public void run() {
         while (isNeedContinue) {
-            System.out.println(this.getInfo());
-            System.out.println(this.getCommands());
-            String input = ConsoleScanner.IN.nextLine();
-            System.out.println(this.execute(input));
+            displayReadWriter.write(List.of(this.getInfo()));
+            displayReadWriter.write(List.of(this.getCommands()));
+            String input = displayReadWriter.writeAndRead(List.of("Введите команду (1, 2...)"));
+            displayReadWriter.write(List.of(this.execute(input)));
         }
     }
 

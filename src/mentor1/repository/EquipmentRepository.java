@@ -2,75 +2,63 @@ package mentor1.repository;
 
 import mentor1.model.*;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class EquipmentRepository {
+//    private final Path path = Path
+//            .of("/Users/aleafoninser/IdeaProjects/group55/src/mentor1/repository/EquipmentRepository.txt");
     private final Map<Integer, Equipment> equipments = new HashMap<>();
+    private int nextId = 1;
 
-    public EquipmentRepository() {
-        Equipment equipment = new Monitor("Samsung", 1);
-        this.equipments.put(equipment.getId(), equipment);
-        Equipment equipment1 = new Mouse("Logitech", 2);
-        this.equipments.put(equipment1.getId(), equipment1);
-        Equipment equipment2 = new Computer("Dell", 3);
-        this.equipments.put(equipment2.getId(), equipment2);
+    public Equipment add(Equipment equipment) {
+        equipment.setId(nextId);
+        equipments.put(nextId, equipment);
+        nextId++;
+        return equipment;
     }
 
-    public Map<Integer, Equipment> getEquipments() {
-        return equipments;
+    public boolean deleteEquipmentById(int equipmentId) {
+        return equipments.remove(equipmentId) != null;
     }
 
-    public Equipment add(int type, String brandName, int serialNumber) {
+    public Optional<Equipment> findEquipmentById(int equipmentId) {
+        return Optional.ofNullable(equipments.get(equipmentId));
+    }
 
-        if (isSerialNumberExist(serialNumber)) {
-            System.out.println("Техника с таким серийным номером уже существует!");
-            return null;
+    public boolean updateBrandName(int equipmentId, String brandName) {
+        Optional<Equipment> findEquipmentResult = findEquipmentById(equipmentId);
+        if (findEquipmentResult.isEmpty()) {
+            return false;
         }
 
-        switch (type) {
-            case 1 -> {
-                Equipment monitor = new Monitor(brandName, serialNumber);
-                equipments.put(monitor.getId(), monitor);
-                return monitor;
-            }
-            case 2 -> {
-                Equipment mouse = new Mouse(brandName, serialNumber);
-                equipments.put(mouse.getId(), mouse);
-                return mouse;
-            }
-            case 3 -> {
-                Equipment computer = new Computer(brandName, serialNumber);
-                equipments.put(computer.getId(), computer);
-                return computer;
-            }
-            default -> {
-                System.out.println("Такого оборудования не существует!");
-                return null;
-            }
+        findEquipmentResult.get().setBrandName(brandName);
+        return true;
+    }
+
+    public boolean updateSerialNumber(int equipmentId, int serialNumber) {
+        Optional<Equipment> findEquipmentResult = findEquipmentById(equipmentId);
+        if (findEquipmentResult.isEmpty()) {
+            return false;
         }
+
+        findEquipmentResult.get().setSerialNumber(serialNumber);
+        return true;
     }
 
-    public void deleteById(int equipmentId) {
-        equipments.remove(equipmentId);
-    }
-
-    public Equipment findById(int equipmentId) {
-        return equipments.get(equipmentId);
-    }
-
-    public void updateBrandName(int equipmentId, String brandName) {
-        Equipment equipment = findById(equipmentId);
-        if (equipment != null) {
-            equipment.setBrandName(brandName);
+    public boolean updateEquipmentType(int equipmentId, EquipmentType equipmentType) {
+        Optional<Equipment> findEquipmentResult = findEquipmentById(equipmentId);
+        if (findEquipmentResult.isEmpty()) {
+            return false;
         }
-    }
 
-    public void updateSerialNumber(int equipmentId, int serialNumber) {
-        Equipment equipment = findById(equipmentId);
-        if (equipment != null) {
-            equipment.setSerialNumber(serialNumber);
-        }
+        findEquipmentResult.get().setEquipmentType(equipmentType);
+        return true;
     }
 
     public boolean isSerialNumberExist(int serialNumber) {
@@ -78,47 +66,58 @@ public class EquipmentRepository {
                 .anyMatch(equipment -> (equipment.getSerialNumber() == serialNumber));
     }
 
-    public Equipment getEquipmentInfo(int equipmentId) {
-        return equipments.get(equipmentId);
-    }
-
-    public List<Equipment> getAllEquipments() {
+    public List<Equipment> getEquipmentsList() {
         return equipments.values().stream()
                 .sorted(Comparator.comparing(Equipment::getId))
                 .collect(Collectors.toList());
     }
 
-    //метод для UserMenu
-    public List<Equipment> getUserEquipments(String userId) {
+//    public List<Equipment> getEquipmentsListFromFile() {
+//        try (Stream<String> lines = Files.lines(path, StandardCharsets.UTF_8)) {
+//            return lines
+//                    .filter(line -> !line.isEmpty())
+//                    .map(line -> {
+//                        String[] tokens = line.trim().split("\\s+");
+//                        return new Equipment(Integer.parseInt());
+//                    })
+//                    .toList();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return Collections.emptyList();
+//        }
+//    }
+
+    //метод для UserMenu и User
+    public List<Equipment> getUserEquipments(int userId) {
         return equipments.values().stream()
-                .filter(equipment -> equipment.getUserId().equalsIgnoreCase(userId))
+                .filter(equipment -> equipment.getUser() != null && equipment.getUser().getId() == userId)
                 .collect(Collectors.toList());
     }
 
-    //метод для UserMenu
+    //метод для UserMenu и User
     public List<Equipment> getFreeEquipments() {
         return equipments.values().stream()
-                .filter((equipment -> equipment.getUserId().equalsIgnoreCase("Не закреплена")))
+                .filter((equipment -> equipment.getUser() == null))
                 .collect(Collectors.toList());
     }
 
-    public void assignEquipment(String userId, int equipmentId) {
+    public boolean assignEquipment(User user, int equipmentId) {
+        Equipment equipment = equipments.get(equipmentId);
+
+        if (equipment != null && user != null) {
+            equipment.setUser(user);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean detachEquipment(int equipmentId) {
         Equipment equipment = equipments.get(equipmentId);
 
         if (equipment != null) {
-            equipment.setUserId(userId);
+            equipment.setUser(null);
+            return true;
         }
-    }
-
-    public void detachEquipment(int equipmentId) {
-        Equipment equipment = equipments.get(equipmentId);
-
-        if (equipment != null) {
-            equipment.setUserId("Не закреплено");
-        }
-    }
-
-    public String getAssignedUserByEquipmentId(int equipmentId) {
-        return equipments.get(equipmentId).getUserId();
+        return false;
     }
 }

@@ -6,59 +6,65 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class UserRepository {
-    private final Map<String, User> users = new HashMap<>();
+    private final Map<Integer, User> users = new HashMap<>();
+    private int nextId = 1;
 
     public UserRepository() {
-        User user = new User("Дмитрий", "123-45-66");
-        users.put(user.getId(), user);
-        User user1 = new User("Иван", "999-45-66");
-        users.put(user1.getId(), user1);
-        User user2 = new User("Ирина", "888-45-66");
-        users.put(user2.getId(), user2);
+        addUser(new User("Дмитрий", "123-45-66"));
+        addUser(new User("Иван", "999-45-66"));
+        addUser(new User("Ирина", "888-45-66"));
     }
 
-    public User add(User user) {
-        users.put(user.getId(), user);
+    public User addUser(User user) {
+        user.setId(nextId);
+        users.put(nextId, user);
+        nextId++;
         return user;
     }
 
-    public void deleteById(String userId) {
-        users.remove(userId);
+    public boolean deleteUserById(int userId) {
+        return users.remove(userId) != null;
     }
 
-    public void updateName(String userId, String name) {
-        User user = findById(userId);
+    public boolean updateUserName(int userId, String name) {
+        Optional<User> findUserResult = findUserById(userId);
 
-        if (user != null) {
-            user.setName(name);
+        if (findUserResult.isEmpty()) {
+            return false;
         }
+
+        findUserResult.get().setName(name);
+        return true;
     }
 
-    public void updatePhone(String userId, String phone) {
-        User user = findById(userId);
+    public boolean updateUserPhone(int userId, String phone) {
+        Optional<User> findUserResult = findUserById(userId);
 
-        if (user != null) {
-            user.setPhoneNumber(phone);
+        if (findUserResult.isEmpty()) {
+            return false;
         }
+
+        findUserResult.get().setPhone(phone);
+        return true;
     }
 
-    public User findById(String userId) {
-        return users.get(userId);
+    public Optional<User> findUserById(int userId) {
+        return Optional.ofNullable(users.get(userId));
+    }
+
+    public boolean isPhoneExist(int excludedUserId, String phone) {
+        return users.values().stream()
+                .anyMatch(user -> user.getId() != excludedUserId && user.getPhone().equalsIgnoreCase(phone));
     }
 
     public boolean isPhoneExist(String phone) {
         return users.values().stream()
-                .anyMatch(user -> user.getPhoneNumber().equalsIgnoreCase(phone));
-    }
-
-    public boolean isNameExist(String name) {
-        return users.values().stream()
-                .anyMatch(user -> user.getName().equalsIgnoreCase(name));
+                .anyMatch(user -> user.getPhone().equalsIgnoreCase(phone));
     }
 
     public List<User> getUsersList() {
         return users.values().stream()
-                .sorted(Comparator.comparing(user -> user.getId()))
+                .sorted(Comparator.comparing(User::getId))
                 .collect(Collectors.toList());
     }
 }
