@@ -1,8 +1,10 @@
 package mentor1.service;
 
-import mentor1.TechnicalException;
+import mentor1.exceptions.TechnicalException;
 import mentor1.model.*;
+import mentor1.repository.EquipmentFileRepository;
 import mentor1.repository.EquipmentRepository;
+import mentor1.repository.EquipmentTypeFileRepository;
 import mentor1.repository.EquipmentTypeRepository;
 
 import java.util.List;
@@ -10,10 +12,14 @@ import java.util.Optional;
 
 public class EquipmentService {
     private final EquipmentRepository equipmentRepository;
+    private final EquipmentFileRepository equipmentFileRepository;
     private final EquipmentTypeRepository equipmentTypeRepository;
+    private final EquipmentTypeFileRepository equipmentTypeFileRepository;
 
-    public EquipmentService(EquipmentRepository equipmentRepository, EquipmentTypeRepository equipmentTypeRepository) {
+    public EquipmentService(EquipmentFileRepository equipmentFileRepository, EquipmentRepository equipmentRepository, EquipmentTypeFileRepository equipmentTypeFileRepository, EquipmentTypeRepository equipmentTypeRepository) {
+        this.equipmentFileRepository = equipmentFileRepository;
         this.equipmentRepository = equipmentRepository;
+        this.equipmentTypeFileRepository = equipmentTypeFileRepository;
         this.equipmentTypeRepository = equipmentTypeRepository;
     }
 
@@ -49,6 +55,10 @@ public class EquipmentService {
 
     public Optional<Equipment> findEquipmentById(int equipmentId) {
         return equipmentRepository.findEquipmentById(equipmentId);
+    }
+
+    public Optional<EquipmentType> findEquipmentTypeById(int equipmentTypeId) {
+        return equipmentTypeFileRepository.findEquipmentTypeById(equipmentTypeId);
     }
 
     public boolean updateBrandName(int currentEquipmentId, String brandName) {

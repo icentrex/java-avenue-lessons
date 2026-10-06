@@ -1,8 +1,6 @@
 package mentor1.menu;
 
-import mentor1.repository.EquipmentRepository;
-import mentor1.repository.EquipmentTypeRepository;
-import mentor1.repository.UserRepository;
+import mentor1.repository.*;
 import mentor1.service.EquipmentService;
 import mentor1.service.UserService;
 
@@ -16,17 +14,20 @@ public class MainMenu implements Cursoring {
     private final EquipmentService equipmentService;
     private Cursoring cursorObject;
     private boolean isNeedContinue = true;
-    private DisplayReadWriterImpl displayReadWriter;
+    private final DisplayReadWriterImpl displayReadWriter;
 
     private MainMenu() {
         displayReadWriter = new DisplayReadWriterImpl();
 
         UserRepository userRepository = new UserRepository();
-        EquipmentRepository equipmentRepository = new EquipmentRepository();
         EquipmentTypeRepository equipmentTypeRepository = new EquipmentTypeRepository();
+        EquipmentTypeFileRepository equipmentTypeFileRepository = new EquipmentTypeFileRepository();
+        EquipmentRepository equipmentRepository = new EquipmentRepository();
+        EquipmentFileRepository equipmentFileRepository = new EquipmentFileRepository();
 
         this.userService = new UserService(userRepository);
-        this.equipmentService = new EquipmentService(equipmentRepository, equipmentTypeRepository);
+        this.equipmentService = new EquipmentService(equipmentFileRepository, equipmentRepository,
+                equipmentTypeFileRepository, equipmentTypeRepository);
 
         this.userMenu = new UserMenu(userService);
         this.equipmentMenu = new EquipmentMenu(equipmentService);

@@ -1,4 +1,4 @@
-package mentor1;
+package mentor1.exceptions;
 
 public class TechnicalException extends RuntimeException {
     public TechnicalException(String message, Throwable cause) {

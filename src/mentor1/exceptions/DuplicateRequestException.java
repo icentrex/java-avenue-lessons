@@ -1,4 +1,4 @@
-package mentor1;
+package mentor1.exceptions;
 
 public class DuplicateRequestException extends RuntimeException {
     public DuplicateRequestException(String message) {

@@ -1,6 +1,6 @@
 package mentor1.repository;
 
-import mentor1.DuplicateRequestException;
+import mentor1.exceptions.DuplicateRequestException;
 import mentor1.model.EquipmentType;
 
 import java.io.IOException;
@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class EquipmentTypeFileRepository {
-    private final Path path = Path
-            .of("/Users/aleafoninser/IdeaProjects/group55/src/mentor1/repository/EquipmentTypeRepository.txt");
+    private static final String FILE_PATH = "src/mentor1/repository/EquipmentTypeRepository.txt";
+    private final Path path = Path.of(FILE_PATH);
     private int nextId = 1;
 
     public EquipmentTypeFileRepository() {
@@ -33,6 +33,21 @@ public class EquipmentTypeFileRepository {
                 .orElse(0);
     }
 
+    private String toLine(EquipmentType et) {
+        return et.getId() + ";" + et.getName();
+    }
+
+    private void writeToFile(List<EquipmentType> equipmentTypes) {
+        List<String> lines = equipmentTypes.stream()
+                .map(this::toLine)
+                .collect(Collectors.toList());
+        try {
+            Files.write(path, lines, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new UncheckedIOException("Не удалось записать в файл: " + path, e);
+        }
+    }
+
     public EquipmentType add(EquipmentType equipmentType) throws DuplicateRequestException {
         List<EquipmentType> all = readFileRepositoryToList();
 
@@ -47,16 +62,8 @@ public class EquipmentTypeFileRepository {
         nextId++;
         all.add(equipmentType);
 
-        List<String> lines = all.stream()
-                .map(et -> et.getId() + " " + et.getName())
-                .collect(Collectors.toList());
-
-        try {
-            Files.write(path, lines, StandardCharsets.UTF_8);
-            return equipmentType;
-        } catch (IOException e) {
-            throw new UncheckedIOException("Не удалось записать в файл: " + path, e);
-        }
+        writeToFile(all);
+        return equipmentType;
     }
 
     public boolean deleteEquipmentTypeById(int equipmentTypeId) {
@@ -71,42 +78,20 @@ public class EquipmentTypeFileRepository {
             return false; //такого типа нет в файле
         }
 
-        List<String> lines = remaining.stream()
-                .map(equipmentType -> equipmentType.getId() + " " + equipmentType.getName())
-                .collect(Collectors.toList());
-
-        try {
-            Files.write(path, lines, StandardCharsets.UTF_8);
-            return true;
-        } catch (IOException e) {
-            throw new UncheckedIOException("Не удалось записать в файл: " + path, e);
-        }
+        writeToFile(remaining);
+        return true;
     }
 
     public Optional<EquipmentType> findEquipmentTypeById(int equipmentTypeId) {
-        List<EquipmentType> equipmentTypeList = readFileRepositoryToList();
-
-        if (!equipmentTypeList.isEmpty()) {
-            for (EquipmentType equipmentType : equipmentTypeList) {
-                if (equipmentType.getId() == equipmentTypeId) {
-                    return Optional.of(equipmentType);
-                }
-            }
-        }
-        return Optional.empty();
+        return readFileRepositoryToList().stream()
+                .filter(equipmentType -> equipmentType.getId() == equipmentTypeId)
+                .findFirst();
     }
 
     public Optional<EquipmentType> findEquipmentTypeByName(String name) {
-        List<EquipmentType> equipmentTypeList = readFileRepositoryToList();
-
-        if (!equipmentTypeList.isEmpty()) {
-            for (EquipmentType equipmentType : equipmentTypeList) {
-                if (equipmentType.getName().equalsIgnoreCase(name)) {
-                    return Optional.of(equipmentType);
-                }
-            }
-        }
-        return Optional.empty();
+        return readFileRepositoryToList().stream()
+                .filter(equipmentType -> equipmentType.getName().equalsIgnoreCase(name))
+                .findFirst();
     }
 
     public List<EquipmentType> getEquipmentTypesListFromFile() {
@@ -122,7 +107,7 @@ public class EquipmentTypeFileRepository {
             return lines
                     .filter(line -> !line.isBlank())
                     .map(line -> {
-                        String[] tokens = line.trim().split("\\s+", 2);
+                        String[] tokens = line.split(";", 2);
                         if (tokens.length < 2) {
                             throw new IllegalArgumentException("Строка не соответствует формату: " + line);
                         }

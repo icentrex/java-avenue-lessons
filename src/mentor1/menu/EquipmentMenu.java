@@ -1,6 +1,6 @@
 package mentor1.menu;
 
-import mentor1.TechnicalException;
+import mentor1.exceptions.TechnicalException;
 import mentor1.model.Equipment;
 import mentor1.model.EquipmentType;
 import mentor1.service.EquipmentService;

@@ -2,18 +2,22 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b61a2fe1-5adf-4d21-b82e-8cd24a2b82fc" name="Changes" comment="Тесты для EquipmentRepository">
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/lib.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/hamcrest-core-1.3.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/junit-4.13.2.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/codewars/Task2.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/uiDesigner.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/group55.iml" beforeDir="false" afterPath="$PROJECT_DIR$/group55.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mentor1/tests/EquipmentRepositoryTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/tests/EquipmentRepositoryTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/tests/EquipmentRepositoryTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/mentor1/repository/UserFileRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mentor1/Exceptions/DuplicateRequestException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mentor1/exceptions/DuplicateRequestException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mentor1/Exceptions/IllegalRequestException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mentor1/exceptions/IllegalRequestException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mentor1/Exceptions/TechnicalException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mentor1/exceptions/TechnicalException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mentor1/menu/EquipmentMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mentor1/menu/EquipmentMenu.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mentor1/menu/UserMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mentor1/menu/UserMenu.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mentor1/model/Equipment.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mentor1/model/Equipment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mentor1/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mentor1/model/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mentor1/repository/EquipmentFileRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mentor1/repository/EquipmentFileRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mentor1/repository/EquipmentRepository.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/mentor1/repository/EquipmentRepository.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mentor1/repository/EquipmentTypeFileRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mentor1/repository/EquipmentTypeFileRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mentor1/repository/EquipmentTypeRepository.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/mentor1/repository/EquipmentTypeRepository.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mentor1/repository/UserRepository.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/mentor1/repository/UserRepository.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mentor1/service/EquipmentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mentor1/service/EquipmentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/mentor1/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/mentor1/service/UserService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,6 +32,11 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
@@ -51,24 +60,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.TestRunner.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature-1-new__improv&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/aleafoninser/IdeaProjects/group55&quot;,
-    &quot;node.js.detected.package.jshint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.jshint&quot;: &quot;&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.28539824&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Main.executor": "Run",
+    "Application.TestRunner.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "git-widget-placeholder": "feature-1-new__improv",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/aleafoninser/IdeaProjects/group55",
+    "node.js.detected.package.jshint": "true",
+    "node.js.selected.package.jshint": "",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.28539824"
   }
-}</component>
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="mentor1.repository" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="TestRunner" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="tests.TestRunner" />
@@ -102,6 +117,17 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Тесты для EquipmentRepository" />

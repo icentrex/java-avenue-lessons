@@ -11,8 +11,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class EquipmentRepository {
-//    private final Path path = Path
-//            .of("/Users/aleafoninser/IdeaProjects/group55/src/mentor1/repository/EquipmentRepository.txt");
     private final Map<Integer, Equipment> equipments = new HashMap<>();
     private int nextId = 1;
 
