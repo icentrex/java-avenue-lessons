@@ -20,14 +20,11 @@ public class MainMenu implements Cursoring {
         displayReadWriter = new DisplayReadWriterImpl();
 
         UserRepository userRepository = new UserRepository();
-        EquipmentTypeRepository equipmentTypeRepository = new EquipmentTypeRepository();
-        EquipmentTypeFileRepository equipmentTypeFileRepository = new EquipmentTypeFileRepository();
-        EquipmentRepository equipmentRepository = new EquipmentRepository();
-        EquipmentFileRepository equipmentFileRepository = new EquipmentFileRepository();
+        EquipmentTypeRepositoryInterface equipmentTypeRepository = new EquipmentTypeRepository();
+        EquipmentRepositoryInterface equipmentRepository = new EquipmentRepository();
 
         this.userService = new UserService(userRepository);
-        this.equipmentService = new EquipmentService(equipmentFileRepository, equipmentRepository,
-                equipmentTypeFileRepository, equipmentTypeRepository);
+        this.equipmentService = new EquipmentService(equipmentRepository, equipmentTypeRepository);
 
         this.userMenu = new UserMenu(userService);
         this.equipmentMenu = new EquipmentMenu(equipmentService);

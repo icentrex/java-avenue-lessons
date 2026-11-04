@@ -1,6 +1,5 @@
 package mentor1.repository;
 
-import mentor1.exceptions.DuplicateRequestException;
 import mentor1.model.Equipment;
 import mentor1.model.EquipmentType;
 import mentor1.model.User;
@@ -14,7 +13,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class EquipmentFileRepository {
+public class EquipmentFileRepository implements EquipmentRepositoryInterface {
     private static final String FILE_PATH = "src/mentor1/repository/EquipmentRepository.txt";
     private final Path path = Path.of(FILE_PATH);
     private final EquipmentTypeFileRepository equipmentTypeFileRepository = new EquipmentTypeFileRepository();
@@ -35,7 +34,7 @@ public class EquipmentFileRepository {
     private String toLine(Equipment e) {
         int userId = e.getUser() != null ? e.getUser().getId() : 0;
         return e.getId() + ";" + e.getEquipmentType().getId() + ";" + e.getBrandName() + ";"
-                + e.getSerialNumber() + ";" + e.getUser().getId();
+                + e.getSerialNumber() + ";" + userId;
     }
 
     private void writeToFile(List<Equipment> equipments) {
@@ -49,26 +48,20 @@ public class EquipmentFileRepository {
         }
     }
 
+    @Override
     public Equipment add(Equipment equipment) {
         List<Equipment> all = readFileRepositoryToList();
 
-        boolean alreadyExist = all.stream().anyMatch(e ->
-                equipment.getEquipmentType().equals(e.getEquipmentType()) && equipment.getBrandName().equalsIgnoreCase(e.getBrandName()) &&
-                        equipment.getSerialNumber() == e.getSerialNumber());
-
-        if (alreadyExist) {
-            throw new DuplicateRequestException("Техника с таким типом, производителем и серийным номером уже существует");
-        }
-
         equipment.setId(nextId);
         nextId++;
-        all.add(equipment);
+        all.add(new Equipment(equipment));
 
         writeToFile(all);
         return equipment;
     }
 
-    public boolean deleteEquipmentById(int equipmentId) {
+    @Override
+    public boolean delete(int equipmentId) {
         //todo проверка на наличие закрепления за пользователем
         List<Equipment> all = readFileRepositoryToList();
 
@@ -84,7 +77,8 @@ public class EquipmentFileRepository {
         return true;
     }
 
-    public Optional<Equipment> findEquipmentById(int equipmentId) {
+    @Override
+    public Optional<Equipment> find(int equipmentId) {
         return readFileRepositoryToList().stream()
                 .filter(equipment -> equipment.getId() == equipmentId)
                 .findFirst();
@@ -104,9 +98,9 @@ public class EquipmentFileRepository {
                             throw new IllegalArgumentException("Строка не соответствует формату: " + line);
                         }
 
-                        Optional<EquipmentType> findEquipmentTypeByIdResult = equipmentTypeFileRepository
-                                .findEquipmentTypeById(Integer.parseInt(tokens[1]));
-                        if (findEquipmentTypeByIdResult.isEmpty()) {
+                        Optional<EquipmentType> findByIdResult = equipmentTypeFileRepository
+                                .findById(Integer.parseInt(tokens[1]));
+                        if (findByIdResult.isEmpty()) {
                             throw new IllegalArgumentException("Строка не соответствует формату: " + line);
                         }
 
@@ -116,7 +110,7 @@ public class EquipmentFileRepository {
 
                         return new Equipment(
                                 Integer.parseInt(tokens[0]),
-                                findEquipmentTypeByIdResult.get(),
+                                findByIdResult.get(),
                                 tokens[2].trim(),
                                 Integer.parseInt(tokens[3]),
                                 user);
@@ -132,7 +126,8 @@ public class EquipmentFileRepository {
     // обновляшь поля какие нужны, проверяешь на ошибки,
     // и в конце кидаешь этого юзера в updateUser(User user)
 
-    public boolean updateEquipment(Equipment equipment) {
+    @Override
+    public boolean update(Equipment equipment) {
         List<Equipment> all = readFileRepositoryToList();
 
         boolean isEquipmentExist = all.stream().anyMatch(eq -> eq.getId() == equipment.getId());
@@ -148,46 +143,19 @@ public class EquipmentFileRepository {
         return true;
     }
 
-//    public boolean updateBrandName(int equipmentId, String brandName) {
-//        Optional<Equipment> findEquipmentResult = findEquipmentById(equipmentId);
-//        if (findEquipmentResult.isEmpty()) {
-//            return false;
-//        }
-//
-//        findEquipmentResult.get().setBrandName(brandName);
-//        return true;
-//    }
-//
-//    public boolean updateSerialNumber(int equipmentId, int serialNumber) {
-//        Optional<Equipment> findEquipmentResult = findEquipmentById(equipmentId);
-//        if (findEquipmentResult.isEmpty()) {
-//            return false;
-//        }
-//
-//        findEquipmentResult.get().setSerialNumber(serialNumber);
-//        return true;
-//    }
-//
-//    public boolean updateEquipmentType(int equipmentId, EquipmentType equipmentType) {
-//        Optional<Equipment> findEquipmentResult = findEquipmentById(equipmentId);
-//        if (findEquipmentResult.isEmpty()) {
-//            return false;
-//        }
-//
-//        findEquipmentResult.get().setEquipmentType(equipmentType);
-//        return true;
-//    }
-
+    @Override
     public boolean isSerialNumberExist(int serialNumber) {
         return readFileRepositoryToList().stream()
                 .anyMatch(equipment -> (equipment.getSerialNumber() == serialNumber));
     }
 
+    @Override
     public List<Equipment> getEquipmentsList() {
         return readFileRepositoryToList();
     }
 
     //метод для UserMenu и User
+    @Override
     public List<Equipment> getUserEquipments(int userId) {
         return readFileRepositoryToList().stream()
                 .filter(equipment -> equipment.getUser() != null && equipment.getUser().getId() == userId)
@@ -195,13 +163,15 @@ public class EquipmentFileRepository {
     }
 
     //метод для UserMenu и User
+    @Override
     public List<Equipment> getFreeEquipments() {
         return readFileRepositoryToList().stream()
                 .filter((equipment -> equipment.getUser() == null))
                 .collect(Collectors.toList());
     }
 
-    public boolean assignEquipment(User user, int equipmentId) {
+    @Override
+    public boolean assign(User user, int equipmentId) {
         List<Equipment> all = readFileRepositoryToList();
         if (user != null) {
             for (Equipment equipment : all) {
@@ -216,7 +186,8 @@ public class EquipmentFileRepository {
         return false;
     }
 
-    public boolean detachEquipment(int equipmentId) {
+    @Override
+    public boolean detach(int equipmentId) {
         List<Equipment> all = readFileRepositoryToList();
 
         for (Equipment equipment : all) {

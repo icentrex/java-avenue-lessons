@@ -1,11 +1,11 @@
 package mentor1.repository;
 
-import com.sun.jdi.request.DuplicateRequestException;
+import mentor1.exceptions.DuplicateRequestException;
 import mentor1.model.*;
 
 import java.util.*;
 
-public class EquipmentTypeRepository {
+public class EquipmentTypeRepository implements EquipmentTypeRepositoryInterface {
     private final HashMap<Integer, EquipmentType> equipmentTypes = new HashMap<>();
     private int nextId = 1;
 
@@ -16,7 +16,7 @@ public class EquipmentTypeRepository {
     }
 
     public EquipmentType add(EquipmentType equipmentType) throws DuplicateRequestException {
-        Optional<EquipmentType> equipmentTypeFindResult = findEquipmentTypeByName(equipmentType.getName());
+        Optional<EquipmentType> equipmentTypeFindResult = findByName(equipmentType.getName());
 
         if (equipmentTypeFindResult.isEmpty()) {
             equipmentType.setId(nextId);
@@ -28,15 +28,15 @@ public class EquipmentTypeRepository {
         }
     }
 
-    public boolean deleteEquipmentTypeById(int equipmentTypeId) {
+    public boolean delete(int equipmentTypeId) {
         return equipmentTypes.remove(equipmentTypeId) != null;
     }
 
-    public Optional<EquipmentType> findEquipmentTypeById(int equipmentTypeId) {
+    public Optional<EquipmentType> findById(int equipmentTypeId) {
         return Optional.ofNullable(equipmentTypes.get(equipmentTypeId));
     }
 
-    public Optional<EquipmentType> findEquipmentTypeByName(String name) {
+    public Optional<EquipmentType> findByName(String name) {
         for (EquipmentType equipmentType : equipmentTypes.values()) {
             if (equipmentType.getName().equalsIgnoreCase(name)) {
                 return Optional.of(equipmentType);

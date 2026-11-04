@@ -29,6 +29,14 @@ public class Equipment implements Cursoring {
         this.user = null;
     }
 
+    public Equipment(Equipment other) {
+        this.id = other.id;
+        this.brandName = other.brandName;
+        this.serialNumber = other.serialNumber;
+        this.equipmentType = other.equipmentType;
+        this.user = other.user;
+    }
+
     public String getBrandName() {
         return this.brandName;
     }
@@ -190,15 +198,15 @@ public class Equipment implements Cursoring {
                                     .write(List.of("Недопустимо пустое имя!"));
                             return "";
                         }
+                        this.setBrandName(correctBrandName);
 
-                        if (MainMenu.getInstance().getEquipmentService().updateBrandName(this.id, correctBrandName)) {
+                        if (MainMenu.getInstance().getEquipmentService().updateEquipment(this)) {
                             MainMenu.getInstance().getDisplayReadWriter()
                                     .write(List.of("Наименование производителя обновлено"));
                         } else {
                             MainMenu.getInstance().getDisplayReadWriter()
                                     .write(List.of("Ошибка. Техника не найдена"));
                         }
-
                     }
                     //Изменить серийный номер
                     case "2" -> {
@@ -209,8 +217,9 @@ public class Equipment implements Cursoring {
                                     .write(List.of("Недопустим пустой серийный номер"));
                             return "";
                         }
+                        this.setSerialNumber(Integer.parseInt(correctSerialNumber));
 
-                        if (MainMenu.getInstance().getEquipmentService().updateSerialNumber(this.id, Integer.parseInt(correctSerialNumber))) {
+                        if (MainMenu.getInstance().getEquipmentService().updateEquipment(this)) {
                             MainMenu.getInstance().getDisplayReadWriter()
                                     .write(List.of("Серийный номер обновлен"));
                         } else {
@@ -242,9 +251,10 @@ public class Equipment implements Cursoring {
                                 .findFirst()
                                 .orElseThrow(() -> new IllegalArgumentException("Тип оборудования с id= " + correctEquipmentTypeId + " не найден"));
 
+                        this.setEquipmentType(chosenType);
 
                         if (MainMenu.getInstance().getEquipmentService()
-                                .updateEquipmentType(this.id, chosenType)) {
+                                .updateEquipment(this)) {
                             MainMenu.getInstance().getDisplayReadWriter()
                                     .write(List.of("Тип оборудования обновлен"));
                         } else {

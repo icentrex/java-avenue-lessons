@@ -12,7 +12,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class EquipmentTypeFileRepository {
+public class EquipmentTypeFileRepository implements EquipmentTypeRepositoryInterface{
     private static final String FILE_PATH = "src/mentor1/repository/EquipmentTypeRepository.txt";
     private final Path path = Path.of(FILE_PATH);
     private int nextId = 1;
@@ -48,6 +48,7 @@ public class EquipmentTypeFileRepository {
         }
     }
 
+    @Override
     public EquipmentType add(EquipmentType equipmentType) throws DuplicateRequestException {
         List<EquipmentType> all = readFileRepositoryToList();
 
@@ -66,7 +67,8 @@ public class EquipmentTypeFileRepository {
         return equipmentType;
     }
 
-    public boolean deleteEquipmentTypeById(int equipmentTypeId) {
+    @Override
+    public boolean delete(int equipmentTypeId) {
         //todo проверка на наличие техники с таким типом
         List<EquipmentType> all = readFileRepositoryToList();
 
@@ -82,19 +84,22 @@ public class EquipmentTypeFileRepository {
         return true;
     }
 
-    public Optional<EquipmentType> findEquipmentTypeById(int equipmentTypeId) {
+    @Override
+    public Optional<EquipmentType> findById(int equipmentTypeId) {
         return readFileRepositoryToList().stream()
                 .filter(equipmentType -> equipmentType.getId() == equipmentTypeId)
                 .findFirst();
     }
 
-    public Optional<EquipmentType> findEquipmentTypeByName(String name) {
+    @Override
+    public Optional<EquipmentType> findByName(String name) {
         return readFileRepositoryToList().stream()
                 .filter(equipmentType -> equipmentType.getName().equalsIgnoreCase(name))
                 .findFirst();
     }
 
-    public List<EquipmentType> getEquipmentTypesListFromFile() {
+    @Override
+    public List<EquipmentType> getEquipmentTypesList() {
         return readFileRepositoryToList();
     }
 
