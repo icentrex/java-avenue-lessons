@@ -15,6 +15,11 @@ public class EquipmentType {
         this.name = name;
     }
 
+    public EquipmentType(EquipmentType other) {
+        this.id = other.id;
+        this.name = other.name;
+    }
+
     public int getId() {
         return id;
     }

@@ -12,12 +12,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class UserFileRepository {
+public class UserRepositoryFile {
     private static final String FILE_PATH = "src/mentor1/repository/UserRepository.txt";
     private final Path path = Path.of(FILE_PATH);
     private int nextId = 1;
 
-    public UserFileRepository() {
+    public UserRepositoryFile() {
         nextId = maxIdFromFile() + 1;
     }
 

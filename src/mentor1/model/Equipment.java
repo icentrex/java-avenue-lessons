@@ -1,13 +1,17 @@
 package mentor1.model;
 
-import mentor1.menu.Cursoring;
+import mentor1.service.UpdateResult;
+import mentor1.utils.Menu;
 import mentor1.menu.MainMenu;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public class Equipment implements Cursoring {
+public class Equipment implements Menu {
+    private static final String EQUIPMENT_NOT_FOUND_MESSAGE = "Ошибка. Техника не найдена";
+    private static final String SERIAL_DUPLICATE_MESSAGE = "Техника с таким серийным номером уже существует";
+    private static final String INVALID_DATA_MESSAGE = "Недопустимые данные";
     private int id;
     private String brandName;
     private int serialNumber;
@@ -35,6 +39,16 @@ public class Equipment implements Cursoring {
         this.serialNumber = other.serialNumber;
         this.equipmentType = other.equipmentType;
         this.user = other.user;
+    }
+
+    private void writeUpdateResult(UpdateResult result, String successMessage) {
+        String message = switch (result) {
+            case SUCCESS -> successMessage;
+            case NOT_FOUND -> EQUIPMENT_NOT_FOUND_MESSAGE;
+            case DUPLICATE -> SERIAL_DUPLICATE_MESSAGE;
+            case INVALID_DATA -> INVALID_DATA_MESSAGE;
+        };
+        MainMenu.getInstance().getDisplayReadWriter().write(List.of(message));
     }
 
     public String getBrandName() {
@@ -127,7 +141,7 @@ public class Equipment implements Cursoring {
                 2 - Открепить технику
                 3 - Изменить технику
                 4 - Удалить технику
-                9 - Назад в главное меню
+                9 - Назад
                 0 - Выход из программы
                 """;
     }
@@ -148,10 +162,13 @@ public class Equipment implements Cursoring {
                         .toList();
                 MainMenu.getInstance().getDisplayReadWriter().write(formatted);
 
-                String userId = MainMenu.getInstance().getDisplayReadWriter()
-                        .writeAndRead(List.of("Введите id пользователя:"));
+                Optional<Integer> userId = MainMenu.getInstance().getDisplayReadWriter()
+                        .writeAndReadInt(List.of("Введите id пользователя:"));
+                if (userId.isEmpty()) {
+                    return "";
+                }
 
-                Optional<User> findUserResult = MainMenu.getInstance().getUserService().findUserById(Integer.parseInt(userId));
+                Optional<User> findUserResult = MainMenu.getInstance().getUserService().findUserById(userId.get());
 
                 if (findUserResult.isEmpty()) {
                     MainMenu.getInstance().getDisplayReadWriter()
@@ -198,34 +215,32 @@ public class Equipment implements Cursoring {
                                     .write(List.of("Недопустимо пустое имя!"));
                             return "";
                         }
-                        this.setBrandName(correctBrandName);
 
-                        if (MainMenu.getInstance().getEquipmentService().updateEquipment(this)) {
-                            MainMenu.getInstance().getDisplayReadWriter()
-                                    .write(List.of("Наименование производителя обновлено"));
-                        } else {
-                            MainMenu.getInstance().getDisplayReadWriter()
-                                    .write(List.of("Ошибка. Техника не найдена"));
+                        Equipment candidate = new Equipment(this);
+                        candidate.setBrandName(correctBrandName);
+
+                        UpdateResult result = MainMenu.getInstance().getEquipmentService().updateEquipment(candidate);
+                        if (result == UpdateResult.SUCCESS) {
+                            this.setBrandName(correctBrandName);
                         }
+                        writeUpdateResult(result, "Наименование производителя обновлено");
                     }
                     //Изменить серийный номер
                     case "2" -> {
-                        String correctSerialNumber = MainMenu.getInstance().getDisplayReadWriter()
-                                .writeAndRead(List.of("Введите корректный серийный номер:"));
+                        Optional<Integer> correctSerialNumber = MainMenu.getInstance().getDisplayReadWriter()
+                                .writeAndReadInt(List.of("Введите корректный серийный номер:"));
                         if (correctSerialNumber.isEmpty()) {
-                            MainMenu.getInstance().getDisplayReadWriter()
-                                    .write(List.of("Недопустим пустой серийный номер"));
                             return "";
                         }
-                        this.setSerialNumber(Integer.parseInt(correctSerialNumber));
 
-                        if (MainMenu.getInstance().getEquipmentService().updateEquipment(this)) {
-                            MainMenu.getInstance().getDisplayReadWriter()
-                                    .write(List.of("Серийный номер обновлен"));
-                        } else {
-                            MainMenu.getInstance().getDisplayReadWriter()
-                                    .write(List.of("Ошибка. Техника не найдена"));
+                        Equipment candidate = new Equipment(this);
+                        candidate.setSerialNumber(correctSerialNumber.get());
+
+                        UpdateResult result = MainMenu.getInstance().getEquipmentService().updateEquipment(candidate);
+                        if (result == UpdateResult.SUCCESS) {
+                            this.setSerialNumber(correctSerialNumber.get());
                         }
+                        writeUpdateResult(result, "Серийный номер обновлен");
                     }
                     //Изменить тип оборудования
                     case "3" -> {
@@ -236,31 +251,32 @@ public class Equipment implements Cursoring {
                                 .map(equipmentType -> String.format("id = %d, name = %s", equipmentType.getId(), equipmentType.getName()))
                                 .toList());
 
-                        String correctEquipmentTypeId = MainMenu.getInstance().getDisplayReadWriter()
-                                .writeAndRead(List.of("Выберите корректный тип оборудования (введите ID):"));
+                        Optional<Integer> correctEquipmentTypeId = MainMenu.getInstance().getDisplayReadWriter()
+                                .writeAndReadInt(List.of("Выберите корректный тип оборудования (введите ID):"));
+
                         if (correctEquipmentTypeId.isEmpty()) {
-                            MainMenu.getInstance().getDisplayReadWriter()
-                                    .write(List.of("Недопустим пустой тип оборудования"));
                             return "";
                         }
 
-                        int correctEquipmentTypeIdInt = Integer.parseInt(correctEquipmentTypeId);
-                        EquipmentType chosenType = equipmentTypesList
-                                .stream()
-                                .filter(equipmentType -> equipmentType.getId() == correctEquipmentTypeIdInt)
-                                .findFirst()
-                                .orElseThrow(() -> new IllegalArgumentException("Тип оборудования с id= " + correctEquipmentTypeId + " не найден"));
+                        int chosenTypeId = correctEquipmentTypeId.get();
+                        Optional<EquipmentType> chosenTypeResult = equipmentTypesList.stream()
+                                .filter(equipmentType -> equipmentType.getId() == chosenTypeId)
+                                .findFirst();
 
-                        this.setEquipmentType(chosenType);
-
-                        if (MainMenu.getInstance().getEquipmentService()
-                                .updateEquipment(this)) {
+                        if (chosenTypeResult.isEmpty()) {
                             MainMenu.getInstance().getDisplayReadWriter()
-                                    .write(List.of("Тип оборудования обновлен"));
-                        } else {
-                            MainMenu.getInstance().getDisplayReadWriter()
-                                    .write(List.of("Ошибка. Техника не найдена"));
+                                    .write(List.of("Тип оборудования с таким ID не найден"));
+                            return "";
                         }
+
+                        Equipment candidate = new Equipment(this);
+                        candidate.setEquipmentType(chosenTypeResult.get());
+
+                        UpdateResult result = MainMenu.getInstance().getEquipmentService().updateEquipment(candidate);
+                        if (result == UpdateResult.SUCCESS) {
+                            this.setEquipmentType(chosenTypeResult.get());
+                        }
+                        writeUpdateResult(result, "Тип оборудования обновлен");
                     }
                     default -> System.out.println("Команды не существует. Попробуйте еще раз!");
                 }
@@ -271,14 +287,14 @@ public class Equipment implements Cursoring {
                         .write(List.of("Удаляю текущую технику...Проверяю закреплена ли она за пользователем..."));
                 if (MainMenu.getInstance().getEquipmentService().deleteEquipmentById(this.id)) {
                     MainMenu.getInstance().getDisplayReadWriter()
-                            .write(List.of("Техника удалена", "Перехожу в главное меню"));
-                    MainMenu.getInstance().setCursorObject(null);
+                            .write(List.of("Техника удалена. Перехожу в меню техники"));
+                    return "BACK";
                 } else {
                     MainMenu.getInstance().getDisplayReadWriter()
                             .write(List.of("Удалить нельзя. Техника закреплена за пользователем"));
                 }
             }
-            //Выход в главное меню
+            //Выход в меню техники
             case "9" -> {
                 return "BACK";
             }

@@ -1,14 +1,14 @@
 package mentor1.menu;
 
-import mentor1.exceptions.TechnicalException;
 import mentor1.model.User;
 import mentor1.service.UserService;
+import mentor1.utils.Menu;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public final class UserMenu implements Cursoring {
+public final class UserMenu implements Menu {
     private final UserService userService;
 
     public UserMenu(UserService userService) {
@@ -43,7 +43,7 @@ public final class UserMenu implements Cursoring {
                 Доступные команды:
                 1 - Создать пользователя
                 2 - Выбрать пользователя
-                9 - Назад в главное меню
+                9 - Назад
                 0 - Выход из программы
                 """;
     }
@@ -58,38 +58,35 @@ public final class UserMenu implements Cursoring {
                 String phone = MainMenu.getInstance().getDisplayReadWriter()
                         .writeAndRead(List.of("Введите телефон пользователя:"));
 
-                try {
-                    Optional<User> createUserResult = userService.createUser(name, phone);
-                    if (createUserResult.isEmpty()) {
-                        MainMenu.getInstance().getDisplayReadWriter()
-                                .write(List.of("Пользователь с таким телефоном уже существует!"));
-                        return "";
-                    }
-
-                    MainMenu.getInstance().setCursorObject(createUserResult.get());
+                Optional<User> createUserResult = userService.createUser(name, phone);
+                if (createUserResult.isEmpty()) {
                     MainMenu.getInstance().getDisplayReadWriter()
-                            .write(List.of("Пользователь создан и выбран."));
-
-                } catch (TechnicalException e) {
-                    MainMenu.getInstance().getDisplayReadWriter()
-                            .write(List.of(e.getMessage()));
+                            .write(List.of("Пользователь с таким телефоном уже существует!"));
+                    return "";
                 }
+
+                MainMenu.getInstance().getNavigation().open(createUserResult.get());
+                MainMenu.getInstance().getDisplayReadWriter()
+                        .write(List.of("Пользователь создан и выбран."));
             }
             //Выбрать пользователя
             case "2" -> {
                 showUsersList();
-                String userId = MainMenu.getInstance().getDisplayReadWriter()
-                        .writeAndRead(List.of("Введите id пользователя:"));
-                Optional<User> findUserResult = userService.findUserById(Integer.parseInt(userId));
+                Optional<Integer> userId = MainMenu.getInstance().getDisplayReadWriter()
+                        .writeAndReadInt(List.of("Введите id пользователя:"));
+                if (userId.isEmpty()) {
+                    return "";
+                }
+                Optional<User> findUserResult = userService.findUserById(userId.get());
 
                 if (findUserResult.isEmpty()) {
                     MainMenu.getInstance().getDisplayReadWriter()
                             .write(List.of("Пользователя с таким ID не существует"));
                     return "";
                 }
-                MainMenu.getInstance().setCursorObject(findUserResult.get());
+                MainMenu.getInstance().getNavigation().open(findUserResult.get());
             }
-            //Выход в главное меню
+            //Выход в меню пользователей
             case "9" -> {
                 return "BACK";
             }

@@ -3,7 +3,7 @@
 //import mentor1.model.Equipment;
 //import mentor1.model.EquipmentType;
 //import mentor1.model.User;
-//import mentor1.repository.EquipmentRepository;
+//import mentor1.repository.EquipmentRepositoryInMemory;
 //import org.junit.Before;
 //import org.junit.Test;
 //
@@ -13,11 +13,11 @@
 //
 //public class EquipmentRepositoryTest {
 //
-//    private EquipmentRepository repository;
+//    private EquipmentRepositoryInMemory repository;
 //
 //    @Before
 //    public void setUp() {
-//        repository = new EquipmentRepository();
+//        repository = new EquipmentRepositoryInMemory();
 //    }
 //
 //    // --- вспомогательные фабрики: reduce™ дублирование при создании объектов ---

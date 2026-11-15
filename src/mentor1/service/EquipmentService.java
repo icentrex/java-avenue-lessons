@@ -1,34 +1,33 @@
 package mentor1.service;
 
-import mentor1.exceptions.TechnicalException;
 import mentor1.model.*;
-import mentor1.repository.EquipmentRepositoryInterface;
-import mentor1.repository.EquipmentTypeRepositoryInterface;
+import mentor1.repository.EquipmentRepository;
+import mentor1.repository.EquipmentTypeRepository;
 
 import java.util.List;
 import java.util.Optional;
 
 public class EquipmentService {
-    private final EquipmentRepositoryInterface equipmentRepository;
-    private final EquipmentTypeRepositoryInterface equipmentTypeRepository;
+    private final EquipmentRepository equipmentRepository;
+    private final EquipmentTypeRepository equipmentTypeRepository;
 
-    public EquipmentService(EquipmentRepositoryInterface equipmentRepository,
-                            EquipmentTypeRepositoryInterface equipmentTypeRepository) {
+    public EquipmentService(EquipmentRepository equipmentRepository,
+                            EquipmentTypeRepository equipmentTypeRepository) {
         this.equipmentRepository = equipmentRepository;
         this.equipmentTypeRepository = equipmentTypeRepository;
     }
 
     public Optional<Equipment> createEquipment(EquipmentType equipmentType, String brandName, int serialNumber) {
+        if (equipmentType == null || brandName == null || brandName.isBlank()) {
+            return Optional.empty();
+        }
+
         if (equipmentRepository.isSerialNumberExist(serialNumber)) {
             return Optional.empty();
         }
 
         Equipment equipment = new Equipment(equipmentType, brandName, serialNumber);
-        try {
-            return Optional.of(equipmentRepository.add(equipment));
-        } catch (RuntimeException e) {
-            throw new TechnicalException("Техническая ошибка при создании техники", e);
-        }
+        return Optional.of(equipmentRepository.add(equipment));
     }
 
     public boolean deleteEquipmentById(int equipmentId) {
@@ -46,8 +45,16 @@ public class EquipmentService {
         return equipmentRepository.find(equipmentId);
     }
 
-    public boolean updateEquipment(Equipment equipment) {
-        return equipmentRepository.update(equipment);
+    public UpdateResult updateEquipment(Equipment equipment) {
+        if (equipment.getEquipmentType() == null || equipment.getBrandName() == null ||
+                equipment.getBrandName().isBlank()) {
+            return UpdateResult.INVALID_DATA;
+        }
+
+        if (equipmentRepository.isSerialNumberExist(equipment.getId(), equipment.getSerialNumber())) {
+            return UpdateResult.DUPLICATE;
+        }
+        return equipmentRepository.update(equipment) ? UpdateResult.SUCCESS : UpdateResult.NOT_FOUND;
     }
 
     //метод для UserMenu и User
@@ -57,13 +64,7 @@ public class EquipmentService {
 
     //метод для UserMenu и User
     public List<Equipment> getFreeEquipments() {
-        List<Equipment> freeEquipments = equipmentRepository.getFreeEquipments();
-
-        if (freeEquipments.isEmpty()) {
-            System.out.println("Вся техника занята");
-        }
-
-        return freeEquipments;
+        return equipmentRepository.getFreeEquipments();
     }
 
     public boolean assignEquipment(User user, int equipmentId) {

@@ -13,14 +13,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class EquipmentFileRepository implements EquipmentRepositoryInterface {
+public class EquipmentRepositoryFile implements EquipmentRepository {
     private static final String FILE_PATH = "src/mentor1/repository/EquipmentRepository.txt";
     private final Path path = Path.of(FILE_PATH);
-    private final EquipmentTypeFileRepository equipmentTypeFileRepository = new EquipmentTypeFileRepository();
-    private final UserFileRepository userFileRepository = new UserFileRepository();
+    private final EquipmentTypeRepositoryFile equipmentTypeRepositoryFile = new EquipmentTypeRepositoryFile();
+    private final UserRepositoryFile userRepositoryFile = new UserRepositoryFile();
     private int nextId = 1;
 
-    public EquipmentFileRepository() {
+    public EquipmentRepositoryFile() {
         nextId = maxIdFromFile() + 1;
     }
 
@@ -98,7 +98,7 @@ public class EquipmentFileRepository implements EquipmentRepositoryInterface {
                             throw new IllegalArgumentException("Строка не соответствует формату: " + line);
                         }
 
-                        Optional<EquipmentType> findByIdResult = equipmentTypeFileRepository
+                        Optional<EquipmentType> findByIdResult = equipmentTypeRepositoryFile
                                 .findById(Integer.parseInt(tokens[1]));
                         if (findByIdResult.isEmpty()) {
                             throw new IllegalArgumentException("Строка не соответствует формату: " + line);
@@ -106,7 +106,7 @@ public class EquipmentFileRepository implements EquipmentRepositoryInterface {
 
                         int userId = Integer.parseInt(tokens[4]);
                         User user = userId == 0 ? null
-                                : userFileRepository.findUserById(userId).orElse(null);
+                                : userRepositoryFile.findUserById(userId).orElse(null);
 
                         return new Equipment(
                                 Integer.parseInt(tokens[0]),
@@ -146,7 +146,14 @@ public class EquipmentFileRepository implements EquipmentRepositoryInterface {
     @Override
     public boolean isSerialNumberExist(int serialNumber) {
         return readFileRepositoryToList().stream()
-                .anyMatch(equipment -> (equipment.getSerialNumber() == serialNumber));
+                .anyMatch(equipment -> equipment.getSerialNumber() == serialNumber);
+    }
+
+    @Override
+    public boolean isSerialNumberExist(int excludedEquipmentId, int serialNumber) {
+        return readFileRepositoryToList().stream()
+                .anyMatch(equipment -> equipment.getId() != excludedEquipmentId &&
+                        equipment.getSerialNumber() == serialNumber);
     }
 
     @Override

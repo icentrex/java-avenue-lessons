@@ -1,6 +1,6 @@
-package mentor1.menu;
+package mentor1.utils;
 
-public interface Cursoring {
+public interface Menu {
     String getInfo();
 
     String getCommands();

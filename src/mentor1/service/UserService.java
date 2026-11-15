@@ -1,6 +1,5 @@
 package mentor1.service;
 
-import mentor1.exceptions.TechnicalException;
 import mentor1.menu.MainMenu;
 import mentor1.model.Equipment;
 import mentor1.model.User;
@@ -17,48 +16,41 @@ public class UserService {
     }
 
     public Optional<User> createUser(String name, String phone) {
+        if (name == null || name.isBlank() || phone == null || phone.isBlank()) {
+            return Optional.empty();
+        }
+
         if (userRepository.isPhoneExist(phone)) {
             return Optional.empty();
         }
 
         User user = new User(name, phone);
-        try {
-            User createdUser = userRepository.addUser(user);
-            if (createdUser == null) {
-                throw new TechnicalException("Репозиторий вернул ошибку при сохранении пользователя", null);
-            }
-            return Optional.of(createdUser);
-        } catch (TechnicalException e) {
-            throw e;
-        } catch (RuntimeException e) {
-            throw new TechnicalException("Техническая ошибка при создании пользователя", e);
-        }
+        return Optional.of(userRepository.add(user));
     }
 
     public boolean deleteUserById(int userId) {
         List<Equipment> userEquipments = MainMenu.getInstance().getEquipmentService().getUserEquipments(userId);
 
         if (userEquipments.isEmpty()) {
-            return userRepository.deleteUserById(userId);
+            return userRepository.delete(userId);
         }
 
         return false;
     }
 
-    public boolean updateUserName(int userId, String name) {
-        return userRepository.updateUserName(userId, name);
-    }
-
-    public boolean updateUserPhone(int userId, String phone) {
-        if (userRepository.isPhoneExist(userId, phone)) {
-            return false;
+    public UpdateResult updateUser(User user) {
+        if (user.getName() == null || user.getName().isBlank() ||
+                user.getPhone() == null || user.getPhone().isBlank()) {
+            return UpdateResult.INVALID_DATA;
         }
-
-        return userRepository.updateUserPhone(userId, phone);
+        if (userRepository.isPhoneExist(user.getId(), user.getPhone())) {
+            return UpdateResult.DUPLICATE;
+        }
+        return userRepository.update(user) ? UpdateResult.SUCCESS : UpdateResult.NOT_FOUND;
     }
 
     public Optional<User> findUserById(int userId) {
-        return userRepository.findUserById(userId);
+        return userRepository.find(userId);
     }
 
     public List<User> getUsersList() {

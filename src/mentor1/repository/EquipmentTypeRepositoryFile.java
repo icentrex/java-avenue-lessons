@@ -3,6 +3,7 @@ package mentor1.repository;
 import mentor1.exceptions.DuplicateRequestException;
 import mentor1.model.EquipmentType;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
@@ -12,12 +13,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class EquipmentTypeFileRepository implements EquipmentTypeRepositoryInterface{
+public class EquipmentTypeRepositoryFile implements EquipmentTypeRepository {
     private static final String FILE_PATH = "src/mentor1/repository/EquipmentTypeRepository.txt";
     private final Path path = Path.of(FILE_PATH);
     private int nextId = 1;
 
-    public EquipmentTypeFileRepository() {
+    public EquipmentTypeRepositoryFile() {
         nextId = maxIdFromFile() + 1;
         if (nextId == 1) {
             add(new EquipmentType("Монитор"));
@@ -104,6 +105,8 @@ public class EquipmentTypeFileRepository implements EquipmentTypeRepositoryInter
     }
 
     public List<EquipmentType> readFileRepositoryToList() {
+        File file = new File(Path.of("testFiles").toUri());
+
         if (!Files.exists(path)) {
             return new ArrayList<>();
         }

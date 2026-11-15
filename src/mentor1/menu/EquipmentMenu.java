@@ -1,15 +1,15 @@
 package mentor1.menu;
 
-import mentor1.exceptions.TechnicalException;
 import mentor1.model.Equipment;
 import mentor1.model.EquipmentType;
 import mentor1.service.EquipmentService;
+import mentor1.utils.Menu;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public final class EquipmentMenu implements Cursoring {
+public final class EquipmentMenu implements Menu {
     private final EquipmentService equipmentService;
 
     public EquipmentMenu(EquipmentService equipmentService) {
@@ -47,7 +47,7 @@ public final class EquipmentMenu implements Cursoring {
                 Доступные команды:
                 1 - Добавить технику
                 2 - Выбрать технику
-                9 - Назад в главное меню
+                9 - Назад
                 0 - Выход из программы
                 """;
     }
@@ -63,53 +63,67 @@ public final class EquipmentMenu implements Cursoring {
                         .stream()
                         .map(equipmentType -> String.format("id = %d, name = %s", equipmentType.getId(), equipmentType.getName()))
                         .toList());
-                String typeId = MainMenu.getInstance().getDisplayReadWriter()
-                        .writeAndRead(List.of("Выберите тип оборудования (введите ID):"));
-                EquipmentType chosenType = equipmentTypesList
-                        .stream()
-                        .filter(equipmentType -> equipmentType.getId() == Integer.parseInt(typeId))
-                        .findFirst()
-                        .orElseThrow(() -> new IllegalArgumentException("Тип оборудования с id= " + typeId + " не найден"));
+
+                Optional<Integer> typeId = MainMenu.getInstance().getDisplayReadWriter()
+                        .writeAndReadInt(List.of("Выберите тип оборудования (введите ID):"));
+
+                if (typeId.isEmpty()) {
+                    return "";
+                }
+
+                int chosenTypeId = typeId.get();
+                Optional<EquipmentType> chosenTypeResult = equipmentTypesList.stream()
+                        .filter(equipmentType -> equipmentType.getId() == chosenTypeId)
+                        .findFirst();
+
+                if (chosenTypeResult.isEmpty()) {
+                    MainMenu.getInstance().getDisplayReadWriter()
+                            .write(List.of("Тип оборудования с таким ID не найден"));
+                    return "";
+                }
+
                 String brandName = MainMenu.getInstance().getDisplayReadWriter()
                         .writeAndRead(List.of("Введите производителя:"));
-                String serialNumber = MainMenu.getInstance().getDisplayReadWriter()
-                        .writeAndRead(List.of("Введите серийный номер:"));
 
-                try {
-                    Optional<Equipment> createEquipmentResult = equipmentService.createEquipment(
-                            chosenType,
-                            brandName,
-                            Integer.parseInt(serialNumber));
+                Optional<Integer> serialNumber = MainMenu.getInstance().getDisplayReadWriter()
+                        .writeAndReadInt(List.of("Введите серийный номер:"));
 
-                    if (createEquipmentResult.isEmpty()) {
-                        MainMenu.getInstance().getDisplayReadWriter()
-                                .write(List.of("Техника с таким серийным номером уже существует!"));
-                        return "";
-                    }
-
-                    MainMenu.getInstance().setCursorObject(createEquipmentResult.get());
-                    MainMenu.getInstance().getDisplayReadWriter()
-                            .write(List.of("Техника добавлена и выбрана!"));
-
-                } catch (TechnicalException e) {
-                    MainMenu.getInstance().getDisplayReadWriter()
-                            .write(List.of(e.getMessage()));
+                if (serialNumber.isEmpty()) {
+                    return "";
                 }
+
+                Optional<Equipment> createEquipmentResult = equipmentService.createEquipment(
+                        chosenTypeResult.get(),
+                        brandName,
+                        serialNumber.get());
+
+                if (createEquipmentResult.isEmpty()) {
+                    MainMenu.getInstance().getDisplayReadWriter()
+                            .write(List.of("Техника с таким серийным номером уже существует!"));
+                    return "";
+                }
+
+                MainMenu.getInstance().getNavigation().open(createEquipmentResult.get());
+                MainMenu.getInstance().getDisplayReadWriter()
+                        .write(List.of("Техника добавлена и выбрана!"));
             }
             //Выбрать технику
             case "2" -> {
                 showEquipmentsList();
-                String equipmentId = MainMenu.getInstance().getDisplayReadWriter()
-                        .writeAndRead(List.of("Введите id оборудования:"));
+                Optional<Integer> equipmentId = MainMenu.getInstance().getDisplayReadWriter()
+                        .writeAndReadInt(List.of("Введите id оборудования:"));
+                if (equipmentId.isEmpty()) {
+                    return "";
+                }
 
-                Optional<Equipment> findEquipmentResult = equipmentService.findEquipmentById(Integer.parseInt(equipmentId));
+                Optional<Equipment> findEquipmentResult = equipmentService.findEquipmentById(equipmentId.get());
 
                 if (findEquipmentResult.isEmpty()) {
                     MainMenu.getInstance().getDisplayReadWriter()
                             .write(List.of("Техника с таким ID не существует"));
                     return "";
                 }
-                MainMenu.getInstance().setCursorObject(findEquipmentResult.get());
+                MainMenu.getInstance().getNavigation().open(findEquipmentResult.get());
             }
             case "9" -> {
                 return "BACK";

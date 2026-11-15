@@ -1,99 +1,25 @@
 package mentor1.repository;
 
-import mentor1.model.*;
+import mentor1.model.Equipment;
+import mentor1.model.User;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Optional;
 
-public class EquipmentRepository implements EquipmentRepositoryInterface {
-    private final Map<Integer, Equipment> equipments = new HashMap<>();
-    private int nextId = 1;
+public interface EquipmentRepository {
 
-    @Override
-    public Equipment add(Equipment equipment) {
-        equipment.setId(nextId);
-        //на сохранение отравляем копию
-        equipments.put(nextId, new Equipment(equipment));
-        nextId++;
-        return equipment;
-    }
+    Equipment add(Equipment equipment);
+    boolean delete(int equipmentId);
+    Optional<Equipment> find(int equipmentId);
+    boolean update(Equipment equipment);
 
-    @Override
-    public boolean delete(int equipmentId) {
-        return equipments.remove(equipmentId) != null;
-    }
+    boolean isSerialNumberExist(int serialNumber);
+    boolean isSerialNumberExist(int excludedEquipmentId, int serialNumber);
 
-    @Override
-    public Optional<Equipment> find(int equipmentId) {
-        //в то место, откуда вызван метод, отдаем копию, если найдена
-        return Optional.ofNullable(equipments.get(equipmentId)).map(e -> new Equipment(e));
-    }
+    List<Equipment> getEquipmentsList();
+    List<Equipment> getUserEquipments(int userId);
+    List<Equipment> getFreeEquipments();
 
-    @Override
-    public boolean update(Equipment equipment) {
-        if (!equipments.containsKey(equipment.getId())) {
-            return false;
-        }
-
-        //сохраняем копию объекта
-        equipments.put(equipment.getId(), new Equipment(equipment));
-        return true;
-    }
-
-    @Override
-    public boolean isSerialNumberExist(int serialNumber) {
-        return equipments.values().stream()
-                .anyMatch(equipment -> (equipment.getSerialNumber() == serialNumber));
-    }
-
-    @Override
-    public List<Equipment> getEquipmentsList() {
-        return equipments.values().stream()
-                .sorted(Comparator.comparing(Equipment::getId))
-                //отдаем копии объектов
-                .map(equipment -> new Equipment(equipment))
-                .collect(Collectors.toList());
-    }
-
-    //метод для UserMenu и User
-    @Override
-    public List<Equipment> getUserEquipments(int userId) {
-        return equipments.values().stream()
-                .filter(equipment -> equipment.getUser() != null && equipment.getUser().getId() == userId)
-                //отдаем копии объектов
-                .map(equipment -> new Equipment(equipment))
-                .collect(Collectors.toList());
-    }
-
-    //метод для UserMenu и User
-    @Override
-    public List<Equipment> getFreeEquipments() {
-        return equipments.values().stream()
-                .filter((equipment -> equipment.getUser() == null))
-                //отдаем копии объектов
-                .map(equipment -> new Equipment(equipment))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public boolean assign(User user, int equipmentId) {
-        Equipment equipment = equipments.get(equipmentId);
-
-        if (equipment != null && user != null) {
-            equipment.setUser(user);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean detach(int equipmentId) {
-        Equipment equipment = equipments.get(equipmentId);
-
-        if (equipment != null) {
-            equipment.setUser(null);
-            return true;
-        }
-        return false;
-    }
+    boolean assign(User user, int equipmentId);
+    boolean detach(int equipmentId);
 }
