@@ -1,8 +1,8 @@
 package mentor1.service;
 
-import mentor1.menu.MainMenu;
 import mentor1.model.Equipment;
 import mentor1.model.User;
+import mentor1.repository.EquipmentRepository;
 import mentor1.repository.UserRepository;
 
 import java.util.List;
@@ -10,9 +10,11 @@ import java.util.Optional;
 
 public class UserService {
     private final UserRepository userRepository;
+    private final EquipmentService equipmentService;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, EquipmentService equipmentService) {
         this.userRepository = userRepository;
+        this.equipmentService = equipmentService;
     }
 
     public Optional<User> createUser(String name, String phone) {
@@ -29,13 +31,11 @@ public class UserService {
     }
 
     public boolean deleteUserById(int userId) {
-        List<Equipment> userEquipments = MainMenu.getInstance().getEquipmentService().getUserEquipments(userId);
-
-        if (userEquipments.isEmpty()) {
-            return userRepository.delete(userId);
+        if (!equipmentService.getUserEquipments(userId).isEmpty()) {
+            return false;
         }
 
-        return false;
+        return userRepository.delete(userId);
     }
 
     public UpdateResult updateUser(User user) {

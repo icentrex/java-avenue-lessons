@@ -25,8 +25,8 @@ public class MainMenu implements Menu {
         EquipmentTypeRepository equipmentTypeRepository = new EquipmentTypeRepositoryInMemory();
         EquipmentRepository equipmentRepository = new EquipmentRepositoryInMemory();
 
-        this.userService = new UserService(userRepository);
         this.equipmentService = new EquipmentService(equipmentRepository, equipmentTypeRepository);
+        this.userService = new UserService(userRepository, equipmentService);
 
         this.userMenu = new UserMenu(userService);
         this.equipmentMenu = new EquipmentMenu(equipmentService);
